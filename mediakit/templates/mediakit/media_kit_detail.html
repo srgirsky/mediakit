@@ -1,0 +1,102 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ media_kit.name }} | Media Kit</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-gray-100">
+
+    <!-- Header Section -->
+    <header class="mb-8 p-4">
+        <nav class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">WORD ON THE BLOCK</h1>
+            <div class="space-x-4">
+                <a href="#" class="text-gray-600 hover:text-gray-900">Campaigns</a>
+                <a href="#" class="text-gray-600 hover:text-gray-900">FAQ</a>
+                <a href="#" class="text-gray-600 hover:text-gray-900">Contact</a>
+            </div>
+        </nav>
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-3xl font-bold">{{ media_kit.name }}</h2>
+                <p class="text-gray-600">{{ media_kit.username }}</p>
+                <p class="text-gray-600">{{ media_kit.location }}</p>
+            </div>
+            {% if media_kit.profile_photo %}
+            <img src="{{ media_kit.profile_photo.url }}" alt="Profile Photo" class="rounded-full w-24 h-24">
+            {% else %}
+            <img src="{% static 'images/default-profile.jpg' %}" alt="Default Profile Photo" class="rounded-full w-24 h-24">
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Brand Partners Section -->
+    <section class="mt-4">
+        <h3 class="text-xl font-semibold">Brand Partners</h3>
+        <div class="flex flex-wrap gap-4">
+            {% for partner in media_kit.brand_partners.all %}
+            <div class="w-16 h-16 relative">
+                {% if partner.logo %}
+                <img src="{{ partner.logo.url }}" alt="{{ partner.name }} Logo" class="object-contain w-full h-full">
+                {% else %}
+                <div class="w-full h-full bg-gray-300 flex items-center justify-center">
+                    <span>No Logo</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Bio Section -->
+    <section class="mt-8">
+        <div class="card">
+            <h3 class="text-lg font-semibold">Bio</h3>
+            <p>{{ media_kit.bio }}</p>
+        </div>
+    </section>
+
+    <!-- Social Statistics Section -->
+    <section class="mt-8">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {% for stat in media_kit.social_stats.all %}
+            <div class="text-center">
+                {% if social_stat.icon %}
+				  <img src="{{ social_stat.icon.url }}" alt="{{ social_stat.platform }} icon" />
+				{% else %}
+				  <img src="/path/to/default/icon.png" alt="Default icon" />
+				{% endif %}
+
+                <p class="font-semibold">{{ stat.stat_value }}</p>
+                <p class="text-sm text-gray-600">{{ stat.stat_name }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Work With Me Section -->
+    <section class="mt-8">
+        <h3 class="text-xl font-semibold">Work with Me</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {% for work in media_kit.work_with_me.all %}
+            <div class="card">
+                <h4>{{ work.platform }}</h4>
+                <p>{{ work.service_description }}</p>
+                <p><strong>${{ work.price }}</strong></p>
+                <a href="#" class="btn">Book now</a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-gray-600">
+        <p>&copy; 2023 Word on the Block. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

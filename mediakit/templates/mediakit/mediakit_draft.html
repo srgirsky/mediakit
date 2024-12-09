@@ -1,0 +1,36 @@
+mediakit_draft.html
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ media_kit.name }} | Media Kit</title>
+    <link rel="stylesheet" href="{% static 'mediakit/css/style.css' %}">
+</head>
+<body>
+    <div class="media-kit-container">
+        {% if media_kit.background_image %}
+            <img src="{{ media_kit.background_image.url }}" alt="Background Image">
+        {% else %}
+            <!-- Placeholder for missing image or a default background -->
+            <div class="default-background">
+                <p>No background image available</p>
+            </div>
+        {% endif %}
+        
+        <h1>{{ media_kit.name }}</h1>
+        <p><strong>Bio:</strong> {{ media_kit.bio }}</p>
+
+        <h2>Social Media Statistics</h2>
+        <ul>
+            <li>TikTok Followers: {{ media_kit.tiktok_followers }}</li>
+            <li>YouTube Followers: {{ media_kit.youtube_followers }}</li>
+            <li>Discord Followers: {{ media_kit.discord_followers }}</li>
+            <li>Snapchat Followers: {{ media_kit.snapchat_followers }}</li>
+        </ul>
+    </div>
+</body>
+</html>

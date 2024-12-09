@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Media Kit</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/media_kit_edit.css' %}">
+</head>
+<body>
+    <div class="media-kit-container">
+        <div class="nav-links">
+            <a href="#">Campaigns</a>
+            <a href="#">FAQ</a>
+            <a href="#">Contact</a>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+               {% csrf_token %}
+
+               <section class="card">
+                   <div class="card-header">
+                       <h2>Edit Media Kit Information</h2>
+                   </div>
+                   <div class="card-content grid-two-columns">
+                       <div class="profile-edit">
+                           <div class="form-group">
+                               <label for="{{ media_kit_form.profile_photo.id_for_label }}">Profile Photo</label>
+                               {{ media_kit_form.profile_photo }}
+                           </div>
+                           <div class="form-group">
+                               <label for="{{ media_kit_form.banner_image.id_for_label }}">Banner Image</label>
+                               {{ media_kit_form.banner_image }}
+                           </div>
+                       </div>
+                       <div class="profile-details">
+                           <div class="form-group">
+                               <label for="{{ media_kit_form.name.id_for_label }}">Name</label>
+                               {{ media_kit_form.name }}
+                           </div>
+                           <div class="form-group">
+                               <label for="{{ media_kit_form.username.id_for_label }}">Username</label>
+                               {{ media_kit_form.username }}
+                           </div>
+                           <div class="form-group">
+                               <label for="{{ media_kit_form.location.id_for_label }}">Location</label>
+                               {{ media_kit_form.location }}
+                           </div>
+                           <div class="form-group">
+                               <label for="{{ media_kit_form.bio.id_for_label }}">Bio</label>
+                               {{ media_kit_form.bio }}
+                           </div>
+                           <div class="form-group">
+                               <label>Tags</label>
+                               {{ media_kit_form.tags }}
+                           </div>
+                       </div>
+                   </div>
+               </section>
+
+               <section class="card">
+                   <div class="card-header">
+                       <h2>Social Platforms</h2>
+                   </div>
+                   <div class="card-content">
+                       {{ social_platform_formset.management_form }}
+                       {% for form in social_platform_formset %}
+                           <div class="form-row social-platform-row">
+                               <div class="form-group">
+                                   <label>Platform</label>
+                                   {{ form.platform }}
+                               </div>
+                               <div class="form-group">
+                                   <label>Followers</label>
+                                   {{ form.followers }}
+                               </div>
+                               <div class="form-group">
+                                   <label>Engagement Rate</label>
+                                   {{ form.engagement_rate }}
+                               </div>
+                               <div class="form-group">
+                                   <label>Average Views</label>
+                                   {{ form.average_views }}
+                               </div>
+                           </div>
+                       {% endfor %}
+                   </div>
+               </section>
+
+               <section class="card">
+                   <div class="card-header">
+                       <h2>Work With Me</h2>
+                   </div>
+                   <div class="card-content">
+                       {{ work_with_me_formset.management_form }}
+                       {% for form in work_with_me_formset %}
+                           <div class="form-row work-with-me-row">
+                               <div class="form-group">
+                                   <label>Platform</label>
+                                   {{ form.platform }}
+                               </div>
+                               <div class="form-group">
+                                   <label>Offering</label>
+                                   {{ form.offering }}
+                               </div>
+                               <div class="form-group">
+                                   <label>Service Description</label>
+                                   {{ form.service_description }}
+                               </div>
+                               <div class="form-group">
+                                   <label>Price</label>
+                                   {{ form.price }}
+                               </div>
+                               <div class="form-group">
+                                   <label>CTA Button</label>
+                                   {{ form.cta_button }}
+                               </div>
+                           </div>
+                       {% endfor %}
+                   </div>
+               </section>
+
+               <section class="card">
+                   <div class="card-header">
+                       <h2>Gallery</h2>
+                   </div>
+                   <div class="card-content">
+                       {{ gallery_formset.management_form }}
+                       {% for form in gallery_formset %}
+                           <div class="form-row gallery-row">
+                               <div class="form-group">
+                                   <label>Platform</label>
+                                   {{ form.platform }}
+                               </div>
+                               <div class="form-group">
+                                   <label>Content URL</label>
+                                   {{ form.url }}
+                               </div>
+                           </div>
+                       {% endfor %}
+                   </div>
+               </section>
+
+               <div class="form-actions">
+                   <button type="submit" class="save-button">Save Media Kit</button>
+               </div>
+           </form>
+
+           <footer>
+               © {% now "Y" %} Word on the Block. All rights reserved.
+           </footer>
+       </div>
+</html>

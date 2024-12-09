@@ -1,0 +1,24 @@
+home.html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Creator Media Kits</title>
+</head>
+<body>
+    <h1>Creators</h1>
+    {% for creator in creators %}
+        <div>
+            <h2>{{ creator.stage_name }}</h2>
+            <p>{{ creator.bio }}</p>
+            {% if creator.profile_picture %}
+                <img src="{{ creator.profile_picture.url }}" alt="{{ creator.stage_name }}">
+            {% endif %}
+            <h3>Social Stats</h3>
+            <p>YouTube: {{ creator.youtube_subscribers }} subscribers</p>
+            <p>Instagram: {{ creator.instagram_followers }} followers</p>
+            <p>TikTok: {{ creator.tiktok_followers }} followers</p>
+        </div>
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,14 @@
+<div class="hero">
+    <img src="{{ media_kit.background_image.url }}" alt="Background">
+    <div class="profile">
+        <img src="{{ media_kit.profile_photo.url }}" alt="{{ media_kit.name }}">
+        <h1>{{ media_kit.name }}</h1>
+        <h2>{{ media_kit.username }}</h2>
+        <p>{{ media_kit.location }}</p>
+        <ul>
+            {% for tag in media_kit.tags.all %}
+                <li>{{ tag.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

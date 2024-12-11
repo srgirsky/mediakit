@@ -274,7 +274,34 @@
                       {% for url in platform_data.urls %}
                           <div class="video-card">
                               <h3>{{ platform_data.platform.get_platform_display }}</h3>
-                              <iframe width="560" height="315" src="{{ url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                              {% if 'youtube.com' in url or 'youtu.be' in url %}
+                                  <iframe 
+                                      width="560" 
+                                      height="315" 
+                                      src="{{ url|embed_video_url }}" 
+                                      frameborder="0" 
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                      allowfullscreen>
+                                  </iframe>
+                              {% elif 'instagram.com' in url %}
+                                  <iframe 
+                                      width="400" 
+                                      height="480" 
+                                      src="{{ url|embed_video_url }}" 
+                                      frameborder="0" 
+                                      scrolling="no" 
+                                      allowtransparency="true">
+                                  </iframe>
+                              {% elif 'tiktok.com' in url %}
+                                  <iframe 
+                                      width="325" 
+                                      height="580" 
+                                      src="{{ url|embed_video_url }}" 
+                                      frameborder="0" 
+                                      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                                      allowfullscreen>
+                                  </iframe>
+                              {% endif %}
                           </div>
                       {% endfor %}
                   {% endfor %}

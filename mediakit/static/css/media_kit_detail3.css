@@ -709,3 +709,64 @@ header nav h1 {
     grid-template-columns: 1fr;
   }
 }
+
+/* Gallery Styles */
+.my-gallery {
+    margin: 2rem 0;
+}
+
+.my-gallery h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.video-card {
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.video-card h3 {
+    padding: 1rem;
+    margin: 0;
+    background: #f5f5f5;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.video-card iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border: none;
+}
+
+/* Platform-specific aspect ratios */
+.video-card iframe[src*="instagram"] {
+    aspect-ratio: 4/5;
+}
+
+.video-card iframe[src*="tiktok"] {
+    aspect-ratio: 9/16;
+}
+
+/* Responsive adjustments for gallery */
+@media screen and (max-width: 768px) {
+    .gallery {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .video-card iframe {
+        height: auto;
+    }
+}

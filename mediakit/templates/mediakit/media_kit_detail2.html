@@ -9,826 +9,282 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Kit - {{ media_kit.name }}</title>
-<style>
-    :root {
-      --bg-primary: #f4f4f4;
-      --text-primary: #333;
-      --text-secondary: #666;
-      --card-bg: white;
-      --border-radius: 8px;
-      --primary-blue: #3b82f6;
-      --gray-border: #e5e7eb;
-    }
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/media_kit_detail3.css' %}">
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.6;
-    }
 
-    .media-kit-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    /* Header Styles */
-    header {
-      margin-bottom: 4rem;
-    }
-
-    header nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    header nav h1 {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text-secondary);
-      transition: color 0.3s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--text-primary);
-    }
-
-    /* Banner and Profile Picture */
-    .banner-container {
-      display: flex;
-      align-items: center;
-      position: relative;
-      margin-bottom: 4rem;
-    }
-
-    .banner {
-      flex-grow: 1;
-      height: 250px;
-      overflow: hidden;
-      border-radius: var(--border-radius);
-    }
-
-    .banner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Profile picture overlaps with the banner */
-    .profile-picture {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 4px solid var(--card-bg);
-        background-color: var(--card-bg);
-        margin-bottom: 1rem; /* Add space between the profile picture and profile info */
-        z-index: 1; /* Ensure it stays on top of the banner */
-    }
-
-    .profile-picture img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Profile Header */
-    .profile-header {
-        display: flex;
-        flex-direction: column;
-        align-items: center; /* Center the profile picture and info */
-        text-align: center; /* Center text elements */
-        margin-top: -60px; /* Pull the profile section up to overlap the banner */
-    }
-
-    /* Flex layout for name and username on the same line */
-    .profile-info .name-username {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem; /* Space between name and username */
-    }
-
-    /* Style for the name */
-    .profile-info .name-username h2 {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin: 0;
-    }
-
-    /* Style for the username */
-    .profile-info .name-username .username {
-        font-size: 1rem;
-        color: var(--text-secondary);
-        margin: 0;
-    }
-
-
-    /* Stack profile info vertically */
-    .profile-info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem; /* Space between each piece of profile info */
-    }
-
-    /* Styling for each piece of profile info */
-    .profile-info h2,
-    .profile-info .username,
-    .profile-info .location,
-    .profile-info .tags {
-        margin: 0; /* Remove default margins */
-    }
-
-    .profile-header h2 {
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
-    .profile-header .username,
-    .profile-header .location,
-    .profile-header .tags {
-        color: var(--text-secondary);
-    }
-
-    .tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem; /* Space between tags */
-    }
-
-    .tags span {
-        display: inline-block;
-        padding: 0.25rem 0.75rem; /* Vertical and horizontal padding */
-        border: 1px solid var(--gray-border); /* Outline color */
-        border-radius: 999px; /* Large value to create an oval shape */
-        background-color: var(--card-bg); /* Optional background color */
-        color: var(--text-secondary); /* Tag text color */
-        font-size: 0.875rem; /* Slightly smaller text size */
-        white-space: nowrap; /* Prevent tags from wrapping onto multiple lines */
-    }
-
-
-
-
-    /* Card Styles */
-    .card {
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 1.5rem;
-    }
-
-    .card-header {
-      border-bottom: 1px solid var(--gray-border);
-      padding: 1rem;
-    }
-
-    .card-header h3 {
-      font-size: 1.25rem;
-      font-weight: bold;
-    }
-
-    .brand-partners .card-header {
-        text-align: center; /* Centers the title */
-        padding: 1rem; /* Adds padding for better spacing */
-    }
-
-    .card-content {
-      padding: 1rem;
-    }
-
-    .audience-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 3 columns */
-        gap: 1rem; /* Space between the cards */
-    }
-
-    .audience-stats-grid .card {
-        height: 250px; /* Adjust the height to match the stat cards */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    /* Ensure the canvas takes up available space within the card */
-    .audience-stats-grid .card-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%; /* Ensure it fills the card height */
-        padding: 1rem; /* Match padding with stat cards */
-    }
-
-    /* Chart Title Styling */
-    .chart-title {
-        font-size: 1rem;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-
-    /* Resize Charts */
-    .card-content canvas {
-        max-width: 100%; /* Ensure charts are responsive */
-        height: 150px;   /* Set a fixed height to make charts smaller */
-    }
-
-    .audience-stats-grid .card-content canvas {
-        max-height: 150px; /* Adjust if necessary */
-        width: auto;
-    }
-
-    .stat-card, .audience-stats-grid .card {
-        background-color: var(--card-bg);
-        border-radius: var(--border-radius);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: 1rem;
-        text-align: center;
-    }
-
-
-    .work-with-me {
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-    }
-
-    .work-with-me .card-header {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    .work-with-me .tab-list {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .work-with-me .tab-trigger {
-      padding: 10px 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-
-    .work-with-me .tab-trigger.active {
-      /* Add visual indicator for active tab */
-      background-color: #ccc; /* Or any other desired style */
-    }
-
-
-    .work-with-me .platform-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    .work-with-me .work-options {
-      display: block;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .work-with-me .work-option {
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .work-with-me .work-option h3 {
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .work-with-me .work-option p {
-      margin-bottom: 10px;
-    }
-
-    .work-with-me .work-option .price {
-      font-weight: bold;
-    }
-
-    .work-with-me .work-option .book-button {
-      padding: 10px 20px;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .work-option .platform-info {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      background-color: #f0f0f0; /* Light gray background */
-      padding: 10px; /* Add padding for spacing */
-      border-radius: 5px; /* Add rounded corners */
-    }
-
-    .platform-logo {
-      width: 30px;
-      height: 30px;
-      margin-right: 10px;
-    }
-
-    .work-option {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .work-option h3 {
-      font-size: 1.1rem; /* Adjust font size as needed */
-    }
-
-    .work-option .price-button {
-      display: flex;
-      align-items: center;
-      justify-content: space-between; /* Space between the price and button */
-    }
-
-    .work-option .price-button .book-button {
-      margin-right: 10px; /* Optional: Add margin to the right of the button */
-    }
-
-    .work-option .book-button {
-      margin-left: 10px;
-      justify-content: flex-end;
-    }
-
-    .work-with-me .tab-content {
-      display: none; /* Hide content by default */
-      margin-top: 20px;
-    }
-
-    .work-with-me .tab-content.active,
-    .work-with-me .tab-content.all-offerings {
-      display: block; /* Show content when active or "all-offerings" class is present */
-    }
-
-    .work-with-me .tab-trigger.all-offerings {
-      /* Add styles for the "all" button here */
-    }
-
-    .tab-list button {
-        /* ... other styles ... */
-        background-color: #f0f0f0;
-    }
-
-    .tab-list button.active {
-        background-color: #ccc;
-    }
-
-    .tab-content {
-        display: none;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-    /* Brand Partners */
-    .brand-logos {
-        display: flex;
-        justify-content: space-around; /* Distributes items with equal space around them */
-        flex-wrap: wrap; /* Allows wrapping if there are too many items */
-        gap: 1rem; /* Optional: Adds spacing between icons */
-        background-color: white; /* Ensure the background is white */
-        padding: 1rem; /* Add padding for better spacing */
-        border-radius: var(--border-radius); /* Maintain consistent rounded corners */
-    }
-
-    .brand-logo {
-        width: 4rem;
-        height: 4rem;
-        background-color: white; /* Ensure background is white */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--gray-border); /* Optional: Add a subtle border for clarity */
-        border-radius: 50%; /* Makes the icon container circular */
-    }
-
-    .brand-logo img {
-        max-width: 80%; /* Prevents image from touching the edges */
-        max-height: 80%;
-        object-fit: contain;
-    }
-
-    .brand-partners {
-      margin-top: 1rem;
-      width: 50%; /* Make it take half the screen width */
-      margin-left: auto; /* Push it to the right, starting at the midpoint */
-    }
-
-    /* Social Stats */
-    .social-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-    }
-
-    .social-stat {
-      background-color: white;
-      border-radius: var(--border-radius);
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      grid-column: span 1; /* Each card spans one column */
-    }
-
-    .social-stat .stat-icon {
-      width: 40px;
-      height: 40px;
-      background-color: #FFFFFF;
-      border-radius: 50%;
-      margin-bottom: 5px; /* Adjust the margin as needed */
-    }
-
-    .social-stat.card {
-      background-color: white;
-      /* Other styles... */
-    }
-
-    .social-stat .stat-icon img[alt="all"] {
-      width: 100%;
-      height: 100%;
-      object-fit: contain; /* Ensures the image fits within the container without distortion */
-    }
-
-    .social-stat .stat-count {
-      font-weight: bold;
-      font-size: 16px; /* Adjust the font size as needed */
-    }
-
-    .social-stat .stat-platform {
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-      font-weight: bold;
-      margin-bottom: 5px; /* Adjust the margin as needed */
-    }
-
-    .stat-card {
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 20px;
-        text-align: center;
-        margin: 10px;
-    }
-
-    /* Grid Layout */
-    .grid-layout {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 1.5rem;
-    }
-
-    .grid-two-columns {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 1.5rem;
-    }
-
-    .grid-single-column {
-        grid-template-columns: 1fr;
-    }
-
-    @media screen and (max-width: 768px) {
-        .grid-layout,
-        .grid-two-columns {
-            grid-template-columns: 1fr;
-        }
-        .social-stat {
-                flex: 1 0 calc(50% - 1rem); /* 2 cards per row on smaller screens */
-            }
-        }
-        .brand-partners {
-            width: 100%; /* Full width on smaller screens */
-            margin-left: 0; /* Reset the margin */
-        }
-
-        .audience-stats-grid {
-            grid-template-columns: 1fr; /* Stack cards vertically */
-        }
-    }
-
-    
-    @media screen and (max-width: 480px) {
-        .social-stat {
-            flex: 1 0 100%; /* 1 card per row on very small screens */
-        }
-    }
-
-
-      .social-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .work-options {
-        grid-template-columns: 1fr;
-      }
-
-      .content-stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-    }
-</style>
 
 </head>
 <body>
     <div class="media-kit-container">
-        <header>
-            <nav>
-                <h1>WORD ON THE BLOCK</h1>
-                <div class="nav-links">
-                    <a href="#">Campaigns</a>
-                    <a href="#">FAQ</a>
-                    <a href="#">Contact</a>
-                </div>
-            </nav>
-            
-            {% if media_kit.banner_image %}
-            <div class="banner">
-                <img src="{{ media_kit.banner_image.url }}" alt="Banner Image">
-            </div>
-            {% endif %}
+           <header>
+               <nav>
+                   <h1>WORD ON THE BLOCK</h1>
+                   <div class="nav-links">
+                       <a href="#">Campaigns</a>
+                       <a href="#">FAQ</a>
+                       <a href="#">Contact</a>
+                   </div>
+               </nav>
 
-            <div class="grid-two-columns">
-                <div class="profile-header">
-                    {% if media_kit.profile_photo %}
-                    <div class="profile-picture">
-                        <img src="{{ media_kit.profile_photo.url }}" alt="{{ media_kit.name }} Profile Photo">
-                    </div>
-                    {% endif %}
-                    <div class="profile-info">
-                        <div class="name-username">
-                            <h2>{{ media_kit.name }}</h2>
-                            <p class="username">@{{ media_kit.username }}</p>
-                        </div>
-                        <p class="location">{{ media_kit.location }}</p>
-                        {% if media_kit.tags %}
-                        <p class="tags">
-                            {% for tag in media_kit.tags.all %}
-                                <span>{{ tag.name }}</span>
-                            {% endfor %}
-                        </p>
-                        {% endif %}
-                    </div>
+               {% if media_kit.banner_image %}
+               <div class="banner">
+                   <img src="{{ media_kit.banner_image.url }}" alt="Banner Image">
+               </div>
+               {% endif %}
+           
 
-                </div>
+          
+              <div class="profile-layout">
+                <div class="profile-header-group">
+                  <div class="grid-two-columns">
 
-                <section class="brand-partners card">
-                    <div class="card-header">
-                        <h3>Brand Partners</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="brand-logos">
-                            {% for partner in media_kit.brand_partners.all %}
-                            <div class="brand-logo">
-                                {% if partner.logo %}
-                                <img src="{{ partner.logo.url }}" alt="{{ partner.name }} logo">
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </header>
-
-        <main>
-            <div class="grid-layout grid-single-column">
-                <section class="bio card">
-                    <div class="card-header">
-                        <h3>Bio</h3>
-                    </div>
-                    <div class="card-content">
-                        <p>{{ media_kit.bio }}</p>
-                    </div>
-                </section>
-            </div>
-
-            <div class="grid-layout grid-single-column">
-                <section class="social-stats card">
-                    <div class="card-header">
-                        <h3>Social Statistics</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="social-stats-grid">
-                            
-                            <!-- Total Followers Card -->
-                            <div class="social-stat card total-followers-card">
-                                <div class="card-content">
-                                    <div class="stat-icon">
-                                        <img src="{% static 'images/all.png' %}" alt="all">
-                                    </div>
-                                    <p class="stat-count">{{ total_followers|abbreviate_number }}</p>
-                                    <p class="stat-platform">Total Followers</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Individual Platform Cards -->
-                      {% for platform_info in media_kit.social_platforms.all %}
-                      <div class="social-stat card">
-                          <div class="card-content">
-                              <div class="stat-icon">
-                                  <img src="{% static 'images/'|add:platform_info.platform|lower|add:'.png' %}" alt="{{ platform_info.platform }}">
+                          <div class="profile-picture-container">
+                              <div class="profile-picture">
+                                  {% if media_kit.profile_photo %}
+                                  <img src="{{ media_kit.profile_photo.url }}" alt="{{ media_kit.name }} Profile Photo">
+                                  {% endif %}
                               </div>
-                              <p class="stat-count">{{ platform_info.followers|abbreviate_number }}</p>  <p class="stat-platform">{{ platform_info.platform }}</p>
+                          </div>
+
+                          <div class="action-buttons-container">
+                              <button class="edit-button" onclick="window.location.href='{% url 'edit_media_kit' media_kit.id %}'">
+                                  <i class="fas fa-pencil-alt"></i> Edit
+                              </button>
+                              <button class="share-button">
+                                  <i class="fas fa-share"></i> Share
+                              </button>
+
+                              <!-- Share Popup Modal -->
+                              <div id="sharePopup" class="popup-modal" style="display: none;">
+                                  <div class="popup-content">
+                                      <h3>Share</h3>
+                                      <input type="text" id="emailInput" placeholder="Enter email(s)" />
+                                      <button id="sendEmailButton">Send</button>
+                                      <button id="closePopup">Close</button>
+                                  </div>
+                              </div>
                           </div>
                       </div>
-                      {% endfor %}
-                        </div>
-                    </div>
-                </section>
+                  </div>
 
-
-            </div>
-
-            <section class="work-with-me card">
-               <header class="card-header">
-                 <h3>Work with me</h3>
-               </header>
-               <div class="card-content">
-                 <nav class="tab-list">
-                   <button class="tab-trigger active" data-tab="all" data-filter="all">All</button>
-                   {% for platform in unique_platforms %}
-                     <button class="tab-trigger" data-tab="{{ platform.platform|lower }}" data-filter="{{ platform.platform|lower }}">
-                       {{ platform.platform }}
-                     </button>
-                   {% endfor %}
-                 </nav>
-
-                 <main class="tab-content-container">
-                   <!-- All Offerings Tab -->
-                   <div class="tab-content active" data-tab="all">
-                     <div class="work-options">
-                       {% for option in work_with_me %}
-                       <article class="work-option" data-platform="{{ option.platform|lower }}">
-                         <div class="platform-info">
-                           <img src="{% static 'images/'|add:option.platform|lower|add:'.png' %}" alt="{{ option.platform }} Logo" class="platform-logo">
-                           <h3>{{ option.platform }}</h3>
-                         </div>
-                         <h3>{{ option.offering }}</h3>
-                         <p>{{ option.service_description }}</p>
-                         <div class="price-button">
-                           <p class="price">${{ option.price }}</p>
-                           <button class="book-button">{{ option.cta_button }}</button>
-                         </div>
-                       </article>
-                       {% endfor %}
-                     </div>
-                   </div>
-
-                   <!-- Platform-Specific Tabs -->
-                   {% for platform in unique_platforms %}
-                     <div class="tab-content" data-tab="{{ platform.platform|lower }}">
-                       <div class="work-options">
-                         {% for option in work_with_me %}
-                           {% if option.platform|lower == platform.platform|lower %}
-                           <article class="work-option" data-platform="{{ option.platform|lower }}">
-                             <div class="platform-info">
-                               <img src="{% static 'images/'|add:option.platform|lower|add:'.png' %}" alt="{{ option.platform }} Logo" class="platform-logo">
-                               <h3>{{ option.platform }}</h3>
-                             </div>
-                             <h3>{{ option.offering }}</h3>
-                             <p>{{ option.service_description }}</p>
-                             <div class="price-button">
-                               <p class="price">${{ option.price }}</p>
-                               <button class="book-button">{{ option.cta_button }}</button>
-                             </div>
-                           </article>
+                   <div class="profile-info-section">
+                       <div class="profile-info">
+                           <div class="name-username">
+                               <h2>{{ media_kit.name }}</h2>
+                               <p class="username">@{{ media_kit.username }}</p>
+                           </div>
+                           <p class="location">{{ media_kit.location }}</p>
+                           {% if media_kit.tags %}
+                           <p class="tags">
+                               {% for tag in media_kit.tags.all %}
+                               <span>{{ tag.name }}</span>
+                               {% endfor %}
+                           </p>
                            {% endif %}
-                         {% endfor %}
                        </div>
-                     </div>
-                   {% endfor %}
-                 </main>
+
+                       <section class="brand-partners card">
+                           <div class="card-header">
+                               <h3>Brand Partners</h3>
+                           </div>
+                           <div class="card-content">
+                               <div class="brand-logos">
+                                   {% for partner in media_kit.brand_partners.all %}
+                                   <div class="brand-logo">
+                                       {% if partner.logo %}
+                                       <a href="{{ partner.integration_url }}" target="_blank" rel="noopener noreferrer">
+                                           <img src="{{ partner.logo.url }}" alt="{{ partner.name }} logo">
+                                       </a>
+                                       {% endif %}
+                                   </div>
+                                   {% endfor %}
+                               </div>
+                           </div>
+                       </section>
+                   </div>
                </div>
-             </section>
+           </header>
+
+               <main>
+
+               <div class="grid-layout grid-single-column">
+                   <section class="bio card">
+                       <div class="card-header">
+                           <h3>Bio</h3>
+                       </div>
+                       <div class="card-content">
+                           <p>{{ media_kit.bio }}</p>
+                       </div>
+                   </section>
+               </div>
+
+               <div class="grid-layout grid-single-column">
+                   <section class="social-stats card">
+                       <div class="card-header">
+                           <h3>Social Statistics</h3>
+                       </div>
+                       <div class="card-content">
+                           <div class="social-stats-grid">
+                               
 
 
+                               <div class="social-stat card total-followers-card">
+                                   <div class="card-content">
+                                       <div class="stat-icon">
+                                           <img src="{% static 'images/all.png' %}" alt="all">
+                                       </div>
+                                    <p class="stat-platform">Total Followers</p>  
+                                       <p class="stat-count">{{ total_followers|abbreviate_number }}</p>
 
+                                    
+                                   </div>
+                               </div>
 
- <section class="content-stats card">
-     <div class="card-header">
-         <h3>My Stats</h3>
-     </div>
-     <div class="card-content">
-         <div class="tabs">
-             <div class="tab-list">
-                 {% for platform in media_kit.social_platforms.all %}
-                 <button class="tab-trigger {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
-                     {{ platform.get_platform_display }}
-                 </button>
-                 {% endfor %}
+                               {% for platform_info in media_kit.social_platforms.all %}
+                               <div class="social-stat card">
+                                   <div class="card-content">
+                                       <div class="stat-icon">
+                                           <img src="{% static 'images/'|add:platform_info.platform|lower|add:'.png' %}" alt="{{ platform_info.platform }}">
+                                       </div>
+                                       <p class="stat-platform">{{ platform_info.platform|title }}</p>
+                                       <p class="stat-count">{{ platform_info.followers|abbreviate_number }}</p>
+                                       
+                                   </div>
+                               </div>
+                               {% endfor %}
+                           </div>
+                       </div>
+                   </section>
+               </div>
+
+               <div class="grid-layout grid-single-column">
+               <section class="work-with-me card">
+                   <header class="card-header">
+                       <h3>Work with me</h3>
+                   </header>
+                   <div class="card-content">
+                       <nav class="tab-list">
+                           <button class="tab-trigger active" data-tab="all" data-filter="all">All</button>
+                           {% for platform in unique_platforms %}
+                           <button class="tab-trigger" data-tab="{{ platform.platform|lower }}" data-filter="{{ platform.platform|lower }}">
+                               {{ platform.platform }}
+                           </button>
+                           {% endfor %}
+                       </nav>
+
+                       <main class="tab-content-container">
+                           <div class="tab-content active" data-tab="all">
+                               <div class="work-options">
+                                   {% for option in work_with_me %}
+                                   <article class="work-option" data-platform="{{ option.platform|lower }}">
+                                       <div class="platform-info">
+                                           <img src="{% static 'images/'|add:option.platform|lower|add:'.png' %}" alt="{{ option.platform }} Logo" class="platform-logo">
+                                           <h3>{{ option.platform }}</h3>
+                                       </div>
+                                       <h3>{{ option.offering }}</h3>
+                                       <p>{{ option.service_description }}</p>
+                                       <div class="price-button">
+                                           <p class="price">${{ option.price }}</p>
+                                           <button class="book-button">{{ option.cta_button }}</button>
+                                       </div>
+                                   </article>
+                                   {% endfor %}
+                               </div>
+                           </div>
+                       </main>
+                   </div>
+               </section>
+           </div>
+
+         <section class="content-stats card">
+             <div class="card-header">
+                 <h3>My Stats</h3>
              </div>
-
-             {% for platform in media_kit.social_platforms.all %}
-             <div class="tab-content {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
-                 <div class="content-stats-grid">
-                     <!-- First Row: Basic Platform Stats -->
-                     <div class="grid grid-cols-3 gap-4 mb-6">
-                         <div class="stat-card">
-                             <h4>Followers</h4>
-                             <p>{{ platform.followers }}</p>
-                         </div>
-                         <div class="stat-card">
-                             <h4>Engagement Rate</h4>
-                             <p>{{ platform.engagement_rate }}%</p>
-                         </div>
-                         <div class="stat-card">
-                             <h4>Average Views</h4>
-                             <p>{{ platform.average_views }}</p>
-                         </div>
+             <div class="card-content">
+                 <div class="tabs">
+                     <div class="tab-list">
+                         {% for platform in media_kit.social_platforms.all %}
+                         <button class="tab-trigger {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
+                             {{ platform.get_platform_display }}
+                         </button>
+                         {% endfor %}
                      </div>
 
-                     <!-- Second Row: Audience Stats (Gender, Age, and Country Distribution) -->
-                     <div class="grid audience-stats-grid gap-4">
-                         <!-- Audience Gender Card -->
-                         <div class="card">
-                             <div class="card-content">
-                                 <h4 class="chart-title">Audience Gender</h4>
-                                 <canvas id="genderChart{{ platform.platform }}" width="200" height="150"></canvas>
-                             </div>
-                         </div>
+                     {% for platform in media_kit.social_platforms.all %}
+                     <div class="tab-content {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
+                       <div class="content-stats-grid">
+                           <!-- First Row: Basic Platform Stats -->
+                           <div class="grid grid-cols-3 gap-4 mb-6">
+                               <div class="stat-card">
+                                   <i class="fas fa-users stat-icon"></i> <!-- Followers Icon -->
+                                   <h4>Followers</h4>
+                                   <p>{{ platform.followers }}</p>
+                               </div>
+                               <div class="stat-card">
+                                   <i class="fas fa-chart-line stat-icon"></i> <!-- Engagement Rate Icon -->
+                                   <h4>Engagement Rate</h4>
+                                   <p>{{ platform.engagement_rate }}%</p>
+                               </div>
+                               <div class="stat-card">
+                                   <i class="fas fa-eye stat-icon"></i> <!-- Average Views Icon -->
+                                   <h4>Average Views</h4>
+                                   <p>{{ platform.average_views }}</p>
+                               </div>
+                           </div>
 
-                         <!-- Age Distribution Card -->
-                         <div class="card">
-                             <div class="card-content">
-                                 <h4 class="chart-title">Age Distribution</h4>
-                                 <canvas id="ageChart{{ platform.platform }}" width="200" height="150"></canvas>
-                             </div>
-                         </div>
-
-                         <!-- Top Countries Card -->
-                         <div class="card">
-                             <div class="card-content">
-                                 <h4 class="chart-title">Top Countries</h4>
-                                 <canvas id="countryChart{{ platform.platform }}" width="200" height="150"></canvas>
+                             <!-- Second Row: Audience Stats (Gender, Age, and Country Distribution) -->
+                             <div class="grid audience-stats-grid gap-4">
+                                 <div class="card">
+                                     <div class="card-content">
+                                         <h4 class="chart-title">Audience Gender</h4>
+                                         <canvas id="genderChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                     </div>
+                                 </div>
+                                 <div class="card">
+                                     <div class="card-content">
+                                         <h4 class="chart-title">Age Distribution</h4>
+                                         <canvas id="ageChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                     </div>
+                                 </div>
+                                 <div class="card">
+                                     <div class="card-content">
+                                         <h4 class="chart-title">Top Countries</h4>
+                                         <canvas id="countryChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                     </div>
+                                 </div>
                              </div>
                          </div>
                      </div>
+                     {% endfor %}
                  </div>
              </div>
-             {% endfor %}
-         </div>
-     </div>
- </section> 
-
- <section class="my-gallery">
-    <h2>My Gallery</h2>
-    <div class="gallery">
-        {% for platform_data in social_platforms %}
-            {% for url in platform_data.urls %}
-                <div class="video-card">
-                    <h3>{{ platform_data.platform.get_platform_display }}</h3>
-                    <iframe width="560" height="315" src="{{ url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-            {% endfor %}
-        {% endfor %}
-    </div>
+         </section>
 
 
+           <section class="my-gallery">
+              <h2>My Gallery</h2>
+              <div class="gallery">
+                  {% for platform_data in social_platforms %}
+                      {% for url in platform_data.urls %}
+                          <div class="video-card">
+                              <h3>{{ platform_data.platform.get_platform_display }}</h3>
+                              <iframe width="560" height="315" src="{{ url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                          </div>
+                      {% endfor %}
+                  {% endfor %}
+              </div>
+
+           </main>
+
+           <footer>
+               <p>&copy; {% now "Y" %} Word on the Block. All rights reserved.</p>
+           </footer>
+       </div>
 
 
- </section>
-
-
-
-
-        </main>
-
-        <footer>
-            <p>&copy; {% now "Y" %} Word on the Block. All rights reserved.</p>
-        </footer>
-    </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
@@ -922,20 +378,31 @@
       })();
       {% endfor %}
 
-      // Existing tab functionality
-      document.querySelectorAll('.content-stats .tab-trigger').forEach(trigger => {
-          trigger.addEventListener('click', () => {
-              const tabValue = trigger.getAttribute('data-tab');
+   document.querySelectorAll('.content-stats .tab-trigger').forEach(trigger => {
+       trigger.addEventListener('click', () => {
+           const tabValue = trigger.getAttribute('data-tab');
+           console.log('Clicked tab:', tabValue);
 
-              // Remove active class from all tab triggers and content
-              document.querySelectorAll('.content-stats .tab-trigger').forEach(t => t.classList.remove('active'));
-              document.querySelectorAll('.content-stats .tab-content').forEach(c => c.classList.remove('active'));
+           // Remove 'active' class from all tab triggers and tab contents
+           document.querySelectorAll('.content-stats .tab-trigger').forEach(t => t.classList.remove('active'));
+           document.querySelectorAll('.content-stats .tab-content').forEach(c => {
+               c.classList.remove('active');
+               console.log('Hiding tab-content:', c.getAttribute('data-tab'));
+           });
 
-              // Add active class to the clicked trigger and corresponding content
-              trigger.classList.add('active');
-              document.querySelector(`.content-stats .tab-content[data-tab="${tabValue}"]`).classList.add('active');
-          });
-      });
+           // Add 'active' class to the clicked trigger and corresponding content
+           trigger.classList.add('active');
+           const activeContent = document.querySelector(`.content-stats .tab-content[data-tab="${tabValue}"]`);
+           if (activeContent) {
+               activeContent.classList.add('active');
+               console.log('Showing tab-content:', activeContent.getAttribute('data-tab'));
+           } else {
+               console.warn('No matching content for:', tabValue);
+           }
+       });
+   });
+
+
   </script>
   <script>
     document.querySelectorAll('.work-with-me .tab-trigger').forEach(trigger => {
@@ -956,6 +423,31 @@
       });
     });
   </script>
+  <script type="text/javascript">
+      document.querySelector('.share-button').addEventListener('click', () => {
+          document.getElementById('sharePopup').style.display = 'block';
+      });
+
+      document.getElementById('closePopup').addEventListener('click', () => {
+          document.getElementById('sharePopup').style.display = 'none';
+      });
+
+      document.getElementById('sendEmailButton').addEventListener('click', () => {
+          const email = document.getElementById('emailInput').value;
+          if (email) {
+              // Logic to send email, e.g., API call
+              alert(`Email sent to: ${email}`);
+              document.getElementById('sharePopup').style.display = 'none';
+          } else {
+              alert('Please enter an email address.');
+          }
+      });
+
+  </script>
+
+  
+
+
 
 
 

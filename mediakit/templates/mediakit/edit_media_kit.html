@@ -87,38 +87,41 @@
                    </div>
                </section>
 
-               <section class="card">
-                   <div class="card-header">
-                       <h2>Work With Me</h2>
-                   </div>
-                   <div class="card-content">
-                       {{ work_with_me_formset.management_form }}
-                       {% for form in work_with_me_formset %}
-                           <div class="form-row work-with-me-row">
-                               <div class="form-group">
-                                   <label>Platform</label>
-                                   {{ form.platform }}
-                               </div>
-                               <div class="form-group">
-                                   <label>Offering</label>
-                                   {{ form.offering }}
-                               </div>
-                               <div class="form-group">
-                                   <label>Service Description</label>
-                                   {{ form.service_description }}
-                               </div>
-                               <div class="form-group">
-                                   <label>Price</label>
-                                   {{ form.price }}
-                               </div>
-                               <div class="form-group">
-                                   <label>CTA Button</label>
-                                   {{ form.cta_button }}
-                               </div>
-                           </div>
-                       {% endfor %}
-                   </div>
-               </section>
+            <section class="card">
+                <div class="card-header">
+                    <h2>Work With Me</h2>
+                </div>
+                <div class="card-content" id="work-with-me-container">
+                    {{ work_with_me_formset.management_form }}
+                    {% for form in work_with_me_formset %}
+                        <div class="form-row work-with-me-row" data-row-id="{{ forloop.counter }}">
+                            <div class="form-group">
+                                <label>Platform</label>
+                                {{ form.platform }}
+                            </div>
+                            <div class="form-group">
+                                <label>Offering</label>
+                                {{ form.offering }}
+                            </div>
+                            <div class="form-group">
+                                <label>Service Description</label>
+                                {{ form.service_description }}
+                            </div>
+                            <div class="form-group">
+                                <label>Price</label>
+                                {{ form.price }}
+                            </div>
+                            <div class="form-group">
+                                <label>CTA Button</label>
+                                {{ form.cta_button }}
+                            </div>
+                            <button type="button" class="delete-offering-button" data-row-id="{{ forloop.counter }}">Delete</button>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-offering-button" class="add-button">Add New Offering</button>
+            </section>
+
 
                <section class="card">
                    <div class="card-header">
@@ -150,4 +153,62 @@
                © {% now "Y" %} Word on the Block. All rights reserved.
            </footer>
        </div>
+
+       <script>
+       	document.getElementById('add-offering-button').addEventListener('click', function () {
+       	    const container = document.getElementById('work-with-me-container');
+       	    const newRow = document.createElement('div');
+       	    newRow.classList.add('form-row', 'work-with-me-row');
+       	    newRow.innerHTML = `
+       	        <div class="form-group">
+       	            <label>Platform</label>
+       	            <input type="text" name="new_platform" class="form-control">
+       	        </div>
+       	        <div class="form-group">
+       	            <label>Offering</label>
+       	            <input type="text" name="new_offering" class="form-control">
+       	        </div>
+       	        <div class="form-group">
+       	            <label>Service Description</label>
+       	            <textarea name="new_service_description" class="form-control"></textarea>
+       	        </div>
+       	        <div class="form-group">
+       	            <label>Price</label>
+       	            <input type="text" name="new_price" class="form-control">
+       	        </div>
+       	        <div class="form-group">
+       	            <label>CTA Button</label>
+       	            <input type="text" name="new_cta_button" class="form-control">
+       	        </div>
+       	    `;
+       	    container.appendChild(newRow);
+       	});
+
+       </script>
+       <script type="text/javascript">
+       	document.addEventListener('DOMContentLoaded', function () {
+       	    const container = document.getElementById('work-with-me-container');
+
+       	    // Event delegation for delete buttons
+       	    container.addEventListener('click', function (e) {
+       	        if (e.target.classList.contains('delete-offering-button')) {
+       	            const rowId = e.target.getAttribute('data-row-id');
+       	            const row = document.querySelector(`[data-row-id="${rowId}"]`);
+
+       	            if (row) {
+       	                // Add a hidden input to mark the item for deletion
+       	                const deleteInput = document.createElement('input');
+       	                deleteInput.type = 'hidden';
+       	                deleteInput.name = `work_with_me_formset-${rowId}-DELETE`;
+       	                deleteInput.value = 'on';
+       	                container.appendChild(deleteInput);
+
+       	                // Remove the row from the DOM
+       	                row.remove();
+       	            }
+       	        }
+       	    });
+       	});
+
+       </script>
 </html>

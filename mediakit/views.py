@@ -47,17 +47,15 @@ def media_kit_detail(request, media_kit_id):
 
 def edit_media_kit(request, media_kit_id):
     media_kit = get_object_or_404(MediaKit, pk=media_kit_id)
-    
+
     # Create formset classes
-    SocialPlatformFormSet = modelformset_factory(SocialPlatform, form=SocialPlatformForm, extra=1)
-    WorkWithMeFormSet = modelformset_factory(WorkWithMe, form=WorkWithMeForm, extra=1)
-    GalleryFormSet = modelformset_factory(Gallery, form=GalleryForm, extra=1)
-    
+    SocialPlatformFormSet = modelformset_factory(SocialPlatform, form=SocialPlatformForm, can_delete=True, extra=1)
+    WorkWithMeFormSet = modelformset_factory(WorkWithMe, form=WorkWithMeForm, can_delete=True, extra=1)
+    GalleryFormSet = modelformset_factory(Gallery, form=GalleryForm, can_delete=True, extra=1)
+
     if request.method == 'POST':
         # Create forms with POST data
         media_kit_form = MediaKitForm(request.POST, request.FILES, instance=media_kit)
-        
-        # Pass the correct queryset when creating formsets with POST data
         social_platform_formset = SocialPlatformFormSet(
             request.POST, 
             request.FILES, 
@@ -72,30 +70,35 @@ def edit_media_kit(request, media_kit_id):
             request.FILES, 
             queryset=media_kit.gallery.all()
         )
-        
-        if media_kit_form.is_valid():
-            # Save the media kit first
+
+        if media_kit_form.is_valid() and social_platform_formset.is_valid() and work_with_me_formset.is_valid() and gallery_formset.is_valid():
+            # Save the media kit
             media_kit_instance = media_kit_form.save()
-            
-            # For formsets, you might want to set the media_kit for each instance
-            if social_platform_formset.is_valid():
-                social_platforms = social_platform_formset.save(commit=False)
-                for platform in social_platforms:
-                    platform.media_kit = media_kit_instance
-                    platform.save()
-            
-            if work_with_me_formset.is_valid():
-                work_with_me_instances = work_with_me_formset.save(commit=False)
-                for work_option in work_with_me_instances:
-                    work_option.media_kit = media_kit_instance
-                    work_option.save()
-            
-            if gallery_formset.is_valid():
-                gallery_instances = gallery_formset.save(commit=False)
-                for gallery_item in gallery_instances:
-                    gallery_item.media_kit = media_kit_instance
-                    gallery_item.save()
-            
+
+            # Save Social Platforms
+            social_platforms = social_platform_formset.save(commit=False)
+            for platform in social_platforms:
+                platform.media_kit = media_kit_instance
+                platform.save()
+            for platform in social_platform_formset.deleted_objects:
+                platform.delete()
+
+            # Save Work With Me
+            work_with_me_instances = work_with_me_formset.save(commit=False)
+            for work_option in work_with_me_instances:
+                work_option.media_kit = media_kit_instance
+                work_option.save()
+            for work_option in work_with_me_formset.deleted_objects:
+                work_option.delete()
+
+            # Save Gallery
+            gallery_instances = gallery_formset.save(commit=False)
+            for gallery_item in gallery_instances:
+                gallery_item.media_kit = media_kit_instance
+                gallery_item.save()
+            for gallery_item in gallery_formset.deleted_objects:
+                gallery_item.delete()
+
             return redirect('media_kit_detail', media_kit_id=media_kit.id)
     else:
         # Initial GET request
@@ -103,7 +106,7 @@ def edit_media_kit(request, media_kit_id):
         social_platform_formset = SocialPlatformFormSet(queryset=media_kit.social_platforms.all())
         work_with_me_formset = WorkWithMeFormSet(queryset=media_kit.work_with_me.all())
         gallery_formset = GalleryFormSet(queryset=media_kit.gallery.all())
-    
+
     return render(request, 'mediakit/edit_media_kit.html', {
         'media_kit_form': media_kit_form,
         'social_platform_formset': social_platform_formset,

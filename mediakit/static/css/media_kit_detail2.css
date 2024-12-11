@@ -1,0 +1,376 @@
+:root {
+  --bg-primary: #f4f4f4;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --card-bg: white;
+  --border-radius: 8px;
+  --primary-blue: #3b82f6;
+  --gray-border: #e5e7eb;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.media-kit-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header Styles */
+header {
+  margin-bottom: 4rem;
+}
+
+header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+header nav h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--text-primary);
+}
+
+.grid-layout {
+  display: grid;
+  gap: 1.5rem; /* Space between sections */
+}
+
+.grid-single-column {
+  grid-template-columns: 1fr; /* Single-column layout */
+  margin-top: 1.5rem;
+}
+
+
+/* Banner - Ensure No Extra Margin Below */
+.banner {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    margin-bottom: 0; /* Remove bottom margin */
+}
+
+.banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Profile Layout */
+.profile-layout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: -60px; /* Pull up to overlap the banner */
+}
+
+/* Profile Header Group */
+.profile-header-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    padding: 0 2rem;
+    margin-bottom: 1rem; /* Space between this group and the info section */
+}
+
+
+/* Profile Picture */
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--card-bg);
+    background-color: var(--card-bg);
+}
+
+.profile-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Action Buttons Positioned at Midpoint */
+.action-buttons-container {
+    position: absolute;
+    top: calc(75px + 37.5px); /* Midpoint between 75px (50% overlap) and 150px (bottom) */
+    right: 2rem; /* Align to the right */
+    transform: translateY(-50%); /* Adjust to center vertically */
+    display: flex;
+    gap: 1rem;
+}
+
+
+/* Edit and Share Buttons */
+.edit-button,
+.share-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem; /* Space between icon and text */
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border: 2px solid black; /* Black outline */
+    border-radius: 999px; /* Rounded corners */
+    background-color: white; /* White background */
+    color: black; /* Black text */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hover Effect */
+.edit-button:hover,
+.share-button:hover {
+    background-color: black; /* Black background on hover */
+    color: white; /* White text on hover */
+}
+
+/* Icon Styling */
+.edit-button i,
+.share-button i {
+    font-size: 1rem; /* Adjust icon size */
+}
+
+/* Popup Modal Styling */
+.popup-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    z-index: 1000;
+    width: 300px;
+}
+
+/* Popup Content */
+.popup-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Input Field for Email */
+#emailInput {
+    padding: 0.5rem;
+    font-size: 1rem;
+    width: 100%;
+    border: 1px solid var(--gray-border);
+    border-radius: var(--border-radius);
+}
+
+/* Buttons in the Popup */
+#sendEmailButton,
+#closePopup {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--primary-blue);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#closePopup {
+    background-color: #ec4899; /* Different color for the close button */
+}
+
+/* Button Hover Effects */
+#sendEmailButton:hover,
+#closePopup:hover {
+    background-color: #2563eb;
+}
+
+
+/* Profile Info and Brand Partners Section */
+.profile-info-section {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    width: 100%;
+    align-items: flex-start; /* Align items to the top */
+}
+
+/* Profile Info - Ensure Full Height Alignment */
+.profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribute content evenly */
+    gap: 1rem;
+}
+
+/* Align Name, Location, and Tags */
+.profile-info .name-username,
+.profile-info .location,
+.profile-info .tags {
+    margin-bottom: 1rem; /* Add spacing between elements */
+}
+
+
+.profile-info .name-username {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-info .name-username h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.profile-info .username {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.profile-info .location {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tags span {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--gray-border);
+  border-radius: 999px;
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Brand Partners - Reduce Overall Height */
+.brand-partners {
+    flex: 1;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    max-height: 200px; /* Set a maximum height */
+    overflow-y: auto; /* Add scroll if content exceeds max height */
+}
+
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-border);
+  background-color: var(--bg-primary);
+}
+
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.card-content {
+  padding: 1rem;
+}
+
+.brand-partners .card-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Brand Logos Container - Even Distribution */
+.brand-logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly; /* Distribute logos evenly */
+    gap: 1rem; /* Add some spacing between logos */
+    padding: 1rem 0; /* Add padding above and below the logos */
+}
+
+
+
+/* Individual Brand Logo - Remove Circle and Center Image */
+.brand-logo {
+    width: 100px; /* Set a fixed width for each logo */
+    height: 100px; /* Set a fixed height for each logo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent; /* Remove background color */
+    border: none; /* Remove the circle outline */
+}
+
+
+/* Logo Image Styling */
+.brand-logo img {
+    max-width: 100%; /* Ensure the image fits within the container */
+    max-height: 100%; /* Maintain aspect ratio */
+    object-fit: contain; /* Fit the image within the container without cropping */
+}
+
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+  .profile-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-picture {
+    position: static;
+    margin-bottom: 1rem;
+  }
+
+  .action-buttons-container {
+    position: static;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .profile-info-section {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}

@@ -300,6 +300,21 @@ header nav h1 {
     margin: 10px;
 }
 
+/* Space between icon and title */
+.stat-card .stat-icon {
+    margin-bottom: 10px; /* Adjust this value for desired space */
+}
+
+/* Space between title and number */
+.stat-card h4 {
+    margin-bottom: 5px; /* Adjust this value for desired space */
+}
+
+.stat-card p {
+    margin-top: 5px; /* Adds space between number and title */
+}
+
+
 .social-stat .card-content {
   align-items: center;
   justify-items: center;

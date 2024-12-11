@@ -1,6 +1,8 @@
 {% load static %}
 {% load mediakit_filters %}
 {% load embed_video_tags %}
+{% load humanize %}
+
 
 
 <!DOCTYPE html>
@@ -187,7 +189,7 @@
                                        <h3>{{ option.offering }}</h3>
                                        <p>{{ option.service_description }}</p>
                                        <div class="price-button">
-                                           <p class="price">${{ option.price }}</p>
+                                           <p class="price">${{ option.price|intcomma }}</p>
                                            <button class="book-button">{{ option.cta_button }}</button>
                                        </div>
                                    </article>
@@ -199,69 +201,70 @@
                </section>
            </div>
 
-         <section class="content-stats card">
-             <div class="card-header">
-                 <h3>My Stats</h3>
-             </div>
-             <div class="card-content">
-                 <div class="tabs">
-                     <div class="tab-list">
-                         {% for platform in media_kit.social_platforms.all %}
-                         <button class="tab-trigger {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
-                             {{ platform.get_platform_display }}
-                         </button>
-                         {% endfor %}
-                     </div>
+   <section class="content-stats card">
+       <div class="card-header">
+           <h3>My Stats</h3>
+       </div>
+       <div class="card-content">
+           <div class="tabs">
+               <div class="tab-list">
+                   {% for platform in media_kit.social_platforms.all %}
+                   <button class="tab-trigger {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
+                       {{ platform.get_platform_display }}
+                   </button>
+                   {% endfor %}
+               </div>
 
-                     {% for platform in media_kit.social_platforms.all %}
-                     <div class="tab-content {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
-                       <div class="content-stats-grid">
-                           <!-- First Row: Basic Platform Stats -->
-                           <div class="grid grid-cols-3 gap-4 mb-6">
-                               <div class="stat-card">
-                                   <i class="fas fa-users stat-icon"></i> <!-- Followers Icon -->
-                                   <h4>Followers</h4>
-                                   <p>{{ platform.followers }}</p>
-                               </div>
-                               <div class="stat-card">
-                                   <i class="fas fa-chart-line stat-icon"></i> <!-- Engagement Rate Icon -->
-                                   <h4>Engagement Rate</h4>
-                                   <p>{{ platform.engagement_rate }}%</p>
-                               </div>
-                               <div class="stat-card">
-                                   <i class="fas fa-eye stat-icon"></i> <!-- Average Views Icon -->
-                                   <h4>Average Views</h4>
-                                   <p>{{ platform.average_views }}</p>
-                               </div>
+               {% for platform in media_kit.social_platforms.all %}
+               <div class="tab-content {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
+                   <div class="content-stats-grid">
+                       <!-- First Row: Basic Platform Stats -->
+                       <div class="grid grid-cols-3 gap-4 mb-6">
+                           <div class="stat-card">
+                               <i class="fas fa-users stat-icon"></i> <!-- Followers Icon -->
+                               <h4>Followers</h4>
+                               <p>{{ platform.followers|intcomma }}</p> <!-- Comma separation for Followers -->
                            </div>
+                           <div class="stat-card">
+                               <i class="fas fa-chart-line stat-icon"></i> <!-- Engagement Rate Icon -->
+                               <h4>Engagement Rate</h4>
+                               <p>{{ platform.engagement_rate|floatformat:2 }}%</p> <!-- Engagement rate with 2 decimal places -->
+                           </div>
+                           <div class="stat-card">
+                               <i class="fas fa-eye stat-icon"></i> <!-- Average Views Icon -->
+                               <h4>Average Views</h4>
+                               <p>{{ platform.average_views|floatformat:0|intcomma }}</p> <!-- Remove decimals and add commas -->
+                           </div>
+                       </div>
 
-                             <!-- Second Row: Audience Stats (Gender, Age, and Country Distribution) -->
-                             <div class="grid audience-stats-grid gap-4">
-                                 <div class="card">
-                                     <div class="card-content">
-                                         <h4 class="chart-title">Audience Gender</h4>
-                                         <canvas id="genderChart{{ platform.platform }}" width="200" height="150"></canvas>
-                                     </div>
-                                 </div>
-                                 <div class="card">
-                                     <div class="card-content">
-                                         <h4 class="chart-title">Age Distribution</h4>
-                                         <canvas id="ageChart{{ platform.platform }}" width="200" height="150"></canvas>
-                                     </div>
-                                 </div>
-                                 <div class="card">
-                                     <div class="card-content">
-                                         <h4 class="chart-title">Top Countries</h4>
-                                         <canvas id="countryChart{{ platform.platform }}" width="200" height="150"></canvas>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                     {% endfor %}
-                 </div>
-             </div>
-         </section>
+                          <!-- Second Row: Audience Stats (Gender, Age, and Country Distribution) -->
+                          <div class="grid audience-stats-grid gap-4">
+                              <div class="card">
+                                  <div class="card-content">
+                                      <h4 class="chart-title">Audience Gender</h4>
+                                      <canvas id="genderChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                  </div>
+                              </div>
+                              <div class="card">
+                                  <div class="card-content">
+                                      <h4 class="chart-title">Age Distribution</h4>
+                                      <canvas id="ageChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                  </div>
+                              </div>
+                              <div class="card">
+                                  <div class="card-content">
+                                      <h4 class="chart-title">Top Countries</h4>
+                                      <canvas id="countryChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+          </div>
+      </section>
+
 
 
            <section class="my-gallery">

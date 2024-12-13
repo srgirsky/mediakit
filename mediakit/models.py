@@ -13,6 +13,7 @@ class MediaKit(models.Model):
     profile_photo = models.ImageField(upload_to='profiles/', blank=True, null=True)
     banner_image = models.ImageField(upload_to='backgrounds/', blank=True, null=True)
     tags = models.ManyToManyField('Tag', blank=True)
+    url_slug = models.CharField(max_length=100, blank=True, null=True)
     
     def __str__(self):
         return self.name

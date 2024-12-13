@@ -89,17 +89,16 @@ header nav h1 {
     position: relative;
     display: flex;
     flex-direction: column;
-    margin-top: -60px; /* Pull up to overlap the banner */
-
+    margin-top: -60px;
 }
 
 .profile-header-group {
     display: grid;
-    grid-template-columns: 1fr; /* Two equal columns */
-    align-items: center;            /* Vertically center items */
-    justify-items: center;          /* Horizontally center items within their grid cells */
+    grid-template-columns: 1fr;
+    align-items: center;
+    justify-items: center;
     width: 100%;
-    height: 200px                    /* Ensure full width */
+    height: 200px;
 }
 
 /* Ensure the containers fill the column width */
@@ -325,31 +324,59 @@ header nav h1 {
   max-height: 150px;
 }
 
+/* Action Buttons Container */
 .action-buttons-container {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;  /* Align buttons to the right */
+    justify-content: flex-end;
     align-items: center;
     gap: 1rem;
-    width: 100%;                /* Take full width of the column */
-    margin-top: 10%;            /* Keep or adjust the top margin as needed */
+    width: 100%;
+    margin-top: 10%;
 }
 
-/* Edit and Share Buttons */
 /* Edit and Share Buttons */
 .edit-button,
 .share-button {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;             /* Space between icon and text */
+    justify-content: center;
+    gap: 0.5rem;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-    border: 2px solid black; /* Black outline */
-    border-radius: 999px;    /* Rounded corners */
-    background-color: white; /* White background */
-    color: black;            /* Black text */
+    border: 2px solid black;
+    border-radius: 999px;
+    background-color: white;
+    color: black;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+    min-width: 100px;
+    text-decoration: none;
+}
+
+/* Mobile Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .action-buttons-container {
+        position: static;
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+        margin: 1rem auto;
+        padding: 0 1rem;
+        width: auto;
+        max-width: 100%;
+    }
+
+    .edit-button,
+    .share-button {
+        flex: 0 1 auto;
+        min-width: 100px;
+        font-size: 0.8rem;
+        padding: 0.5rem 0.75rem;
+        display: inline-flex !important;
+        visibility: visible !important;
+    }
 }
 
 /* Hover Effects */
@@ -708,6 +735,78 @@ header nav h1 {
   .social-stats .total-followers-card .stat-icon img {
       width: 40px;
   }
+
+  /* Adjust profile layout */
+  .profile-layout {
+    margin-top: -30px;
+  }
+
+  /* Profile header group adjustments */
+  .profile-header-group {
+    height: auto;
+  }
+
+  .grid-two-columns {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Profile picture container */
+  .profile-picture-container {
+    order: 1;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .profile-picture {
+    margin-right: 0;  /* Remove the right margin on mobile */
+  }
+
+  /* Action buttons */
+  .action-buttons-container {
+    order: 2;
+    justify-content: center;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Profile info section */
+  .profile-info-section {
+    flex-direction: column;
+  }
+
+  .profile-info {
+    order: 3;
+    text-align: center;
+    margin-right: 0;
+    align-items: center;
+  }
+
+  /* Name and username */
+  .profile-info .name-username {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* Location */
+  .profile-info .location {
+    margin: 0.5rem 0;
+  }
+
+  /* Tags */
+  .profile-info .tags {
+    justify-content: center;
+    margin: 0.5rem 0;
+  }
+
+  /* Brand partners */
+  .brand-partners {
+    order: 4;
+    max-height: none;
+    margin-top: 1.5rem;
+    width: 100%;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -883,4 +982,73 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .audience-stats-grid .card.has-data {
     display: block; /* Show only when has-data class is present */
+}
+
+/* Profile Info Section - Mobile Adjustments */
+@media screen and (max-width: 768px) {
+    /* Adjust profile layout */
+    .profile-layout {
+        margin-top: -30px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Reorder elements using flex order */
+    .profile-picture-container {
+        order: 1;
+        justify-content: center;
+    }
+
+    .profile-info {
+        order: 2;
+        text-align: center;
+        margin-right: 0;
+    }
+
+    .action-buttons-container {
+        order: 3;
+        width: 100%;
+        margin: 1rem 0;
+        justify-content: center;
+        position: static; /* Remove any absolute positioning */
+    }
+
+    .brand-partners {
+        order: 4;
+        max-height: none;
+        margin-top: 1rem;
+    }
+
+    /* Other existing mobile styles... */
+}
+
+/* Chart Container Styles */
+.card-content canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 200px; /* Adjust this value as needed */
+}
+
+/* Adjust card content padding for mobile */
+@media screen and (max-width: 768px) {
+    .card-content {
+        padding: 0.75rem;
+    }
+
+    /* Specific adjustments for chart containers */
+    .audience-stats-grid .card-content {
+        padding: 0.5rem;
+        overflow: hidden; /* Prevent content from spilling out */
+    }
+
+    /* Adjust chart title size on mobile */
+    .chart-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Ensure charts stay contained */
+    .audience-stats-grid canvas {
+        max-height: 150px; /* Smaller height on mobile */
+    }
 }

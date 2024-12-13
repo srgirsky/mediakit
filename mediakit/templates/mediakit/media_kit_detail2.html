@@ -201,109 +201,131 @@
                </section>
            </div>
 
-   <section class="content-stats card">
-       <div class="card-header">
-           <h3>My Stats</h3>
-       </div>
-       <div class="card-content">
-           <div class="tabs">
-               <div class="tab-list">
-                   {% for platform in media_kit.social_platforms.all %}
-                   <button class="tab-trigger {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
-                       {{ platform.get_platform_display }}
-                   </button>
-                   {% endfor %}
+           <section class="content-stats card">
+               <div class="card-header">
+                   <h3>My Stats</h3>
                </div>
+               <div class="card-content">
+                   <nav class="tab-list">
+                       {% for platform in media_kit.social_platforms.all %}
+                       <button class="tab-trigger {% if forloop.first %}active{% endif %}" 
+                               data-tab="{{ platform.platform|lower }}">
+                           {{ platform.get_platform_display }}
+                       </button>
+                       {% endfor %}
+                   </nav>
 
-               {% for platform in media_kit.social_platforms.all %}
-               <div class="tab-content {% if forloop.first %}active{% endif %}" data-tab="{{ platform.platform }}">
-                   <div class="content-stats-grid">
-                       <!-- First Row: Basic Platform Stats -->
-                       <div class="grid grid-cols-3 gap-4 mb-6">
-                           <div class="stat-card">
-                               <i class="fas fa-users stat-icon"></i> <!-- Followers Icon -->
-                               <h4>Followers</h4>
-                               <p>{{ platform.followers|intcomma }}</p> <!-- Comma separation for Followers -->
+                   <main class="tab-content-container">
+                               {% for platform in media_kit.social_platforms.all %}
+                               <div class="tab-content {% if forloop.first %}active{% endif %}" 
+                                    data-tab="{{ platform.platform|lower }}">
+                   <div class="stats-options">
+                       <div class="content-stats-grid">
+                           <!-- First Row: Basic Platform Stats -->
+                           <div class="grid grid-cols-3 gap-4 mb-6">
+                               {% if platform.followers %}
+                               <div class="stat-card">
+                                   <i class="fas fa-users stat-icon"></i>
+                                   <h4>Followers</h4>
+                                   <p>{{ platform.followers|intcomma }}</p>
+                               </div>
+                               {% endif %}
+                               
+                               {% if platform.engagement_rate %}
+                               <div class="stat-card">
+                                   <i class="fas fa-chart-line stat-icon"></i>
+                                   <h4>Engagement Rate</h4>
+                                   <p>{{ platform.engagement_rate|floatformat:2 }}%</p>
+                               </div>
+                               {% endif %}
+                               
+                               {% if platform.average_views %}
+                               <div class="stat-card">
+                                   <i class="fas fa-eye stat-icon"></i>
+                                   <h4>Average Views</h4>
+                                   <p>{{ platform.average_views|floatformat:0|intcomma }}</p>
+                               </div>
+                               {% endif %}
                            </div>
-                           <div class="stat-card">
-                               <i class="fas fa-chart-line stat-icon"></i> <!-- Engagement Rate Icon -->
-                               <h4>Engagement Rate</h4>
-                               <p>{{ platform.engagement_rate|floatformat:2 }}%</p> <!-- Engagement rate with 2 decimal places -->
-                           </div>
-                           <div class="stat-card">
-                               <i class="fas fa-eye stat-icon"></i> <!-- Average Views Icon -->
-                               <h4>Average Views</h4>
-                               <p>{{ platform.average_views|floatformat:0|intcomma }}</p> <!-- Remove decimals and add commas -->
+
+                           <!-- Second Row: Audience Stats -->
+                           <div class="grid audience-stats-grid gap-4">
+                               {% if platform.male_percentage or platform.female_percentage %}
+                               <div class="card has-data">
+                                   <div class="card-content">
+                                       <h4 class="chart-title">Audience Gender</h4>
+                                       <canvas id="genderChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                   </div>
+                               </div>
+                               {% endif %}
+                               
+                               {% if platform.age_18_34_percentage or platform.age_35_44_percentage or platform.age_45_54_percentage or platform.age_55_64_percentage or platform.age_65_plus_percentage %}
+                               <div class="card has-data">
+                                   <div class="card-content">
+                                       <h4 class="chart-title">Age Distribution</h4>
+                                       <canvas id="ageChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                   </div>
+                               </div>
+                               {% endif %}
+                               
+                               {% if platform.top_country_1 and platform.top_country_1_percentage %}
+                               <div class="card has-data">
+                                   <div class="card-content">
+                                       <h4 class="chart-title">Top Countries</h4>
+                                       <canvas id="countryChart{{ platform.platform }}" width="200" height="150"></canvas>
+                                   </div>
+                               </div>
+                               {% endif %}
                            </div>
                        </div>
-
-                          <!-- Second Row: Audience Stats (Gender, Age, and Country Distribution) -->
-                          <div class="grid audience-stats-grid gap-4">
-                              <div class="card">
-                                  <div class="card-content">
-                                      <h4 class="chart-title">Audience Gender</h4>
-                                      <canvas id="genderChart{{ platform.platform }}" width="200" height="150"></canvas>
-                                  </div>
-                              </div>
-                              <div class="card">
-                                  <div class="card-content">
-                                      <h4 class="chart-title">Age Distribution</h4>
-                                      <canvas id="ageChart{{ platform.platform }}" width="200" height="150"></canvas>
-                                  </div>
-                              </div>
-                              <div class="card">
-                                  <div class="card-content">
-                                      <h4 class="chart-title">Top Countries</h4>
-                                      <canvas id="countryChart{{ platform.platform }}" width="200" height="150"></canvas>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  {% endfor %}
-              </div>
-          </div>
-      </section>
+                   </div>
+               </div>
+               {% endfor %}
+           </main>
+       </div>
+   </section>
 
 
 
            <section class="my-gallery">
               <h2>My Gallery</h2>
               <div class="gallery">
-                  {% for platform_data in social_platforms %}
-                      {% for url in platform_data.urls %}
+                  {% for gallery_item in media_kit.gallery.all|dictsort:"video_priority" %}
+                      {% if gallery_item.example_url %}
                           <div class="video-card">
-                              <h3>{{ platform_data.platform.get_platform_display }}</h3>
-                              {% if 'youtube.com' in url or 'youtu.be' in url %}
+                              {% if gallery_item.platform %}
+                                  <h3>{{ gallery_item.platform }}</h3>
+                              {% endif %}
+                              {% if 'youtube.com' in gallery_item.example_url or 'youtu.be' in gallery_item.example_url %}
                                   <iframe 
                                       width="560" 
                                       height="315" 
-                                      src="{{ url|embed_video_url }}" 
+                                      src="{{ gallery_item.example_url|embed_video_url }}" 
                                       frameborder="0" 
                                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                       allowfullscreen>
                                   </iframe>
-                              {% elif 'instagram.com' in url %}
+                              {% elif 'instagram.com' in gallery_item.example_url %}
                                   <iframe 
                                       width="400" 
                                       height="480" 
-                                      src="{{ url|embed_video_url }}" 
+                                      src="{{ gallery_item.example_url|embed_video_url }}" 
                                       frameborder="0" 
                                       scrolling="no" 
                                       allowtransparency="true">
                                   </iframe>
-                              {% elif 'tiktok.com' in url %}
+                              {% elif 'tiktok.com' in gallery_item.example_url %}
                                   <iframe 
                                       width="325" 
                                       height="580" 
-                                      src="{{ url|embed_video_url }}" 
+                                      src="{{ gallery_item.example_url|embed_video_url }}" 
                                       frameborder="0" 
                                       allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
                                       allowfullscreen>
                                   </iframe>
                               {% endif %}
                           </div>
-                      {% endfor %}
+                      {% endif %}
                   {% endfor %}
               </div>
 
@@ -408,31 +430,32 @@
       })();
       {% endfor %}
 
-   document.querySelectorAll('.content-stats .tab-trigger').forEach(trigger => {
-       trigger.addEventListener('click', () => {
-           const tabValue = trigger.getAttribute('data-tab');
-           console.log('Clicked tab:', tabValue);
+      </script>
+      <script>
 
-           // Remove 'active' class from all tab triggers and tab contents
-           document.querySelectorAll('.content-stats .tab-trigger').forEach(t => t.classList.remove('active'));
-           document.querySelectorAll('.content-stats .tab-content').forEach(c => {
-               c.classList.remove('active');
-               console.log('Hiding tab-content:', c.getAttribute('data-tab'));
-           });
-
-           // Add 'active' class to the clicked trigger and corresponding content
-           trigger.classList.add('active');
-           const activeContent = document.querySelector(`.content-stats .tab-content[data-tab="${tabValue}"]`);
-           if (activeContent) {
-               activeContent.classList.add('active');
-               console.log('Showing tab-content:', activeContent.getAttribute('data-tab'));
-           } else {
-               console.warn('No matching content for:', tabValue);
-           }
-       });
-   });
-
-
+ document.addEventListener('DOMContentLoaded', () => {
+     const tabTriggers = document.querySelectorAll('.content-stats .tab-trigger');
+     const tabContents = document.querySelectorAll('.content-stats .tab-content');
+     
+     tabTriggers.forEach(trigger => {
+         trigger.addEventListener('click', () => {
+             const tabValue = trigger.getAttribute('data-tab');
+             
+             // Remove active from all triggers and contents
+             tabTriggers.forEach(t => t.classList.remove('active'));
+             tabContents.forEach(content => content.classList.remove('active'));
+             
+             // Add active to clicked trigger
+             trigger.classList.add('active');
+             
+             // Find and activate corresponding content
+             const selectedContent = document.querySelector(`.content-stats .tab-content[data-tab="${tabValue}"]`);
+             if (selectedContent) {
+                 selectedContent.classList.add('active');
+             }
+         });
+     });
+ });
   </script>
   <script>
     document.querySelectorAll('.work-with-me .tab-trigger').forEach(trigger => {

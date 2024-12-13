@@ -478,11 +478,14 @@ header nav h1 {
 }
 
 .work-with-me .work-option {
-  padding: 15px; /* Adjust padding for overall card content */
+  padding: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* Ensures content doesn't spill out */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
 }
 
 .work-option .platform-info {
@@ -519,29 +522,34 @@ header nav h1 {
   font-size: 0.9rem; /* Smaller text size for the description */
   color: gray; /* Makes text gray */
   margin-top: 10px; /* Adds space before the description */
-  margin-bottom: 20px; /* Leaves extra space before the next section */
+  margin-bottom: auto;
 }
 
 .work-option .price-button {
-  display: flex; /* Flex layout for price and button alignment */
-  justify-content: space-between; /* Aligns price to the left and button to the right */
-  align-items: center; /* Ensures vertical alignment */
-  margin-top: auto; /* Pushes the price and button to the bottom of the card */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  margin-top: 15px;
 }
 
 .work-option .price {
-  font-size: 1rem; /* Ensures the price text is readable */
-  font-weight: bold; /* Optionally make the price bold for emphasis */
-  color: black; /* Keeps price text black */
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: black;
+  margin: 0;
 }
 
 .work-option .book-button {
-  font-size: 0.9rem; /* Matches button size with description text */
-  background-color: #f0f0f0; /* Optional button background */
-  border: 1px solid #ccc; /* Optional button border */
-  padding: 8px 15px; /* Adjusts button padding */
-  cursor: pointer; /* Adds a pointer cursor for buttons */
-  border-radius: 3px; /* Optional rounded corners */
+  font-size: 0.9rem;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin: 0;
+  white-space: nowrap;
 }
 
 
@@ -640,13 +648,11 @@ header nav h1 {
 }
 
 .content-stats .tab-content {
-    display: none; /* Hide all tab-content by default */
+    display: none;
 }
-
 .content-stats .tab-content.active {
-    display: block; /* Show only the active tab-content */
+    display: block;
 }
-
 
 
 
@@ -769,4 +775,112 @@ header nav h1 {
     .video-card iframe {
         height: auto;
     }
+}
+
+/* Unified Tab Button Styling for both sections */
+.work-with-me .tab-list,
+.content-stats .tab-list {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.tab-trigger {
+    background-color: #fff;
+    border: none;
+    border-bottom: 2px solid lightgray;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: Montserrat, sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: lightgray;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.tab-trigger:not(:last-child) {
+    margin-right: -1px;
+}
+
+.tab-trigger:hover {
+    color: gray;
+}
+
+.tab-trigger.active {
+    color: black;
+    border-bottom: 2px solid red;
+    font-weight: bold;
+}
+
+/* Ensure tab content doesn't overlap with buttons */
+.tab-content-container {
+    position: relative;
+    z-index: 0;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Content Stats tab functionality
+    const contentStatsSection = document.querySelector('.content-stats');
+    const statsTriggers = contentStatsSection.querySelectorAll('.tab-trigger');
+    const statsTabContents = contentStatsSection.querySelectorAll('.tab-content');
+
+    // Add click handlers to all stats tab triggers
+    statsTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            // Remove active class from all triggers
+            statsTriggers.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked trigger
+            trigger.classList.add('active');
+
+            // Hide all tab contents
+            statsTabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Show selected tab content
+            const platform = trigger.getAttribute('data-tab');
+            const selectedContent = contentStatsSection.querySelector(`.tab-content[data-tab="${platform}"]`);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+        });
+    });
+
+    // Work with me tab functionality (keep this separate)
+    document.querySelectorAll('.work-with-me .tab-trigger').forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const tabValue = trigger.getAttribute('data-tab');
+
+            // Remove active class from all tab triggers
+            document.querySelectorAll('.work-with-me .tab-trigger').forEach(t => t.classList.remove('active'));
+            // Add active class to the clicked trigger
+            trigger.classList.add('active');
+
+            // Show/hide work options based on selected tab
+            const workOptions = document.querySelectorAll('.work-with-me .work-option');
+            workOptions.forEach(option => {
+                option.style.display = tabValue === 'all' || option.getAttribute('data-platform') === tabValue ? 'block' : 'none';
+            });
+        });
+    });
+});
+
+/* Content Stats Card Visibility */
+.stat-card:empty,
+.stat-card p:empty,
+.stat-card p:only-child {
+    display: none;
+}
+
+.audience-stats-grid .card {
+    display: none; /* Hide by default */
+}
+
+.audience-stats-grid .card.has-data {
+    display: block; /* Show only when has-data class is present */
 }

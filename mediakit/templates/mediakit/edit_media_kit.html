@@ -15,200 +15,573 @@
             <a href="#">Contact</a>
         </div>
 
-        <form method="post" enctype="multipart/form-data">
-               {% csrf_token %}
-
-               <section class="card">
-                   <div class="card-header">
-                       <h2>Edit Media Kit Information</h2>
-                   </div>
-                   <div class="card-content grid-two-columns">
-                       <div class="profile-edit">
-                           <div class="form-group">
-                               <label for="{{ media_kit_form.profile_photo.id_for_label }}">Profile Photo</label>
-                               {{ media_kit_form.profile_photo }}
-                           </div>
-                           <div class="form-group">
-                               <label for="{{ media_kit_form.banner_image.id_for_label }}">Banner Image</label>
-                               {{ media_kit_form.banner_image }}
-                           </div>
-                       </div>
-                       <div class="profile-details">
-                           <div class="form-group">
-                               <label for="{{ media_kit_form.name.id_for_label }}">Name</label>
-                               {{ media_kit_form.name }}
-                           </div>
-                           <div class="form-group">
-                               <label for="{{ media_kit_form.username.id_for_label }}">Username</label>
-                               {{ media_kit_form.username }}
-                           </div>
-                           <div class="form-group">
-                               <label for="{{ media_kit_form.location.id_for_label }}">Location</label>
-                               {{ media_kit_form.location }}
-                           </div>
-                           <div class="form-group">
-                               <label for="{{ media_kit_form.bio.id_for_label }}">Bio</label>
-                               {{ media_kit_form.bio }}
-                           </div>
-                           <div class="form-group">
-                               <label>Tags</label>
-                               {{ media_kit_form.tags }}
-                           </div>
-                       </div>
-                   </div>
-               </section>
-
-               <section class="card">
-                   <div class="card-header">
-                       <h2>Social Platforms</h2>
-                   </div>
-                   <div class="card-content">
-                       {{ social_platform_formset.management_form }}
-                       {% for form in social_platform_formset %}
-                           <div class="form-row social-platform-row">
-                               <div class="form-group">
-                                   <label>Platform</label>
-                                   {{ form.platform }}
-                               </div>
-                               <div class="form-group">
-                                   <label>Followers</label>
-                                   {{ form.followers }}
-                               </div>
-                               <div class="form-group">
-                                   <label>Engagement Rate</label>
-                                   {{ form.engagement_rate }}
-                               </div>
-                               <div class="form-group">
-                                   <label>Average Views</label>
-                                   {{ form.average_views }}
-                               </div>
-                           </div>
-                       {% endfor %}
-                   </div>
-               </section>
-
+        <!-- Profile Section -->
+        <form method="post" enctype="multipart/form-data" class="section-form" id="profile-form">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="profile">
             <section class="card">
-                <div class="card-header">
+                <div class="card-header" onclick="toggleSection(this)">
+                    <h2>Edit Media Kit Information</h2>
+                    <div class="arrow">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="profile-details">
+                        <div class="form-group">
+                            <label for="{{ media_kit_form.name.id_for_label }}">Name</label>
+                            {{ media_kit_form.name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ media_kit_form.username.id_for_label }}">Username</label>
+                            {{ media_kit_form.username }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ media_kit_form.location.id_for_label }}">Location</label>
+                            {{ media_kit_form.location }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ media_kit_form.bio.id_for_label }}">Bio</label>
+                            {{ media_kit_form.bio }}
+                        </div>
+                        <div class="form-group">
+                            <label>Tags</label>
+                            <div id="tagContainer" class="tag-container">
+                                {% for tag in media_kit.tags.all %}
+                                    <span class="tag">
+                                        {{ tag.name }}
+                                        <button type="button" class="tag-delete" data-tag-id="{{ tag.id }}">×</button>
+                                    </span>
+                                {% endfor %}
+                                <input type="text" id="tagInput" class="tag-input" placeholder="Add tags...">
+                                <input type="hidden" name="tags" value="{{ media_kit.tags.all|join:',' }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-edit">
+                        <div class="form-group">
+                            <label for="{{ media_kit_form.profile_photo.id_for_label }}">Profile Photo</label>
+                            {% if media_kit.profile_photo %}
+                                <div class="current-file">Current: <a href="{{ media_kit.profile_photo.url }}" target="_blank">{{ media_kit.profile_photo.name }}</a></div>
+                            {% endif %}
+                            {{ media_kit_form.profile_photo }}
+                            {% if media_kit_form.profile_photo.errors %}
+                                <div class="error">{{ media_kit_form.profile_photo.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ media_kit_form.banner_image.id_for_label }}">Banner Image</label>
+                            {% if media_kit.banner_image %}
+                                <div class="current-file">Current: <a href="{{ media_kit.banner_image.url }}" target="_blank">{{ media_kit.banner_image.name }}</a></div>
+                            {% endif %}
+                            {{ media_kit_form.banner_image }}
+                            {% if media_kit_form.banner_image.errors %}
+                                <div class="error">{{ media_kit_form.banner_image.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="save-button">Save Profile</button>
+                </div>
+            </section>
+        </form>
+
+        <!-- Brand Partners Section -->
+        <form method="post" enctype="multipart/form-data" class="section-form" id="brand-partners-form">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="brand_partners">
+            <section class="card">
+                <div class="card-header" onclick="toggleSection(this)">
+                    <h2>Brand Partners</h2>
+                    <div class="arrow">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-content">
+                    {{ brand_partner_formset.management_form }}
+                    <div class="partners-container">
+                        {% for form in brand_partner_formset %}
+                            <div class="partner-row" data-row-id="{{ forloop.counter }}">
+                                {% if not forloop.first %}
+                                    <div class="separator"></div>
+                                {% endif %}
+                                {{ form.id }}
+                                <div class="partner-content">
+                                    <div class="partner-fields">
+                                        <div class="form-group">
+                                            <label for="{{ form.name.id_for_label }}">Brand Name</label>
+                                            {{ form.name }}
+                                            {% if form.name.errors %}
+                                                <div class="error">{{ form.name.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ form.logo.id_for_label }}">Brand Logo</label>
+                                            {{ form.logo }}
+                                            {% if form.logo.errors %}
+                                                <div class="error">{{ form.logo.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ form.integration_url.id_for_label }}">Integration URL</label>
+                                            {{ form.integration_url }}
+                                            {% if form.integration_url.errors %}
+                                                <div class="error">{{ form.integration_url.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <button type="button" class="delete-brand-partner-button" data-row-id="{{ forloop.counter }}">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3 6H5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <span class="sr-only">Delete partner</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="add-brand-partner-button" class="add-button">Add New Brand Partner</button>
+                    <button type="submit" class="save-button">Save Brand Partners</button>
+                </div>
+            </section>
+        </form>
+
+        <!-- Social Platforms Section -->
+        <form method="post" enctype="multipart/form-data" class="section-form" id="social-platforms-form">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="social_platforms">
+            <section class="card">
+                <div class="card-header" onclick="toggleSection(this)">
+                    <h2>Social Platforms</h2>
+                    <div class="arrow">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-content" id="social-platforms-container">
+                    {{ social_platform_formset.management_form }}
+                    {% for form in social_platform_formset %}
+                        <div class="form-row social-platform-row" data-row-id="{{ forloop.counter }}">
+                            {{ form.id }}
+                            <div class="form-group">
+                                <label for="{{ form.platform.id_for_label }}">Platform</label>
+                                {{ form.platform }}
+                            </div>
+                            
+                            <!-- Platform Stats -->
+                            <div class="form-group">
+                                <label for="{{ form.followers.id_for_label }}">Followers</label>
+                                {{ form.followers }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.engagement_rate.id_for_label }}">Engagement Rate (%)</label>
+                                {{ form.engagement_rate }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.average_views.id_for_label }}">Average Views</label>
+                                {{ form.average_views }}
+                            </div>
+
+                            <!-- Audience Demographics -->
+                            <div class="form-group">
+                                <label for="{{ form.male_percentage.id_for_label }}">Male Percentage (%)</label>
+                                {{ form.male_percentage }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.female_percentage.id_for_label }}">Female Percentage (%)</label>
+                                {{ form.female_percentage }}
+                            </div>
+
+                            <!-- Age Distribution -->
+                            <div class="form-group">
+                                <label for="{{ form.age_18_34_percentage.id_for_label }}">Age 18-34 (%)</label>
+                                {{ form.age_18_34_percentage }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.age_35_44_percentage.id_for_label }}">Age 35-44 (%)</label>
+                                {{ form.age_35_44_percentage }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.age_45_54_percentage.id_for_label }}">Age 45-54 (%)</label>
+                                {{ form.age_45_54_percentage }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.age_55_64_percentage.id_for_label }}">Age 55-64 (%)</label>
+                                {{ form.age_55_64_percentage }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.age_65_plus_percentage.id_for_label }}">Age 65+ (%)</label>
+                                {{ form.age_65_plus_percentage }}
+                            </div>
+
+                            <!-- Top Countries -->
+                            <div class="form-group">
+                                <label for="{{ form.top_country_1.id_for_label }}">Top Country 1</label>
+                                {{ form.top_country_1 }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.top_country_1_percentage.id_for_label }}">Top Country 1 Percentage (%)</label>
+                                {{ form.top_country_1_percentage }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.top_country_2.id_for_label }}">Top Country 2</label>
+                                {{ form.top_country_2 }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.top_country_2_percentage.id_for_label }}">Top Country 2 Percentage (%)</label>
+                                {{ form.top_country_2_percentage }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.top_country_3.id_for_label }}">Top Country 3</label>
+                                {{ form.top_country_3 }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.top_country_3_percentage.id_for_label }}">Top Country 3 Percentage (%)</label>
+                                {{ form.top_country_3_percentage }}
+                            </div>
+
+                            <!-- Example URLs -->
+                            <div class="form-group">
+                                <label for="{{ form.example_url_1.id_for_label }}">Example URL 1</label>
+                                {{ form.example_url_1 }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.example_url_2.id_for_label }}">Example URL 2</label>
+                                {{ form.example_url_2 }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.example_url_3.id_for_label }}">Example URL 3</label>
+                                {{ form.example_url_3 }}
+                            </div>
+
+                            <button type="button" class="delete-platform-button" data-row-id="{{ forloop.counter }}">Delete</button>
+                        </div>
+                    {% endfor %}
+                    <div class="form-actions">
+                        <button type="button" id="add-platform-button" class="add-button">Add New Platform</button>
+                        <button type="submit" class="save-button">Save Social Platforms</button>
+                    </div>
+                </div>
+            </section>
+        </form>
+
+        <!-- Work With Me Section -->
+        <form method="post" enctype="multipart/form-data" class="section-form" id="work-with-me-form">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="work_with_me">
+            <section class="card">
+                <div class="card-header" onclick="toggleSection(this)">
                     <h2>Work With Me</h2>
+                    <div class="arrow">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
                 </div>
                 <div class="card-content" id="work-with-me-container">
                     {{ work_with_me_formset.management_form }}
                     {% for form in work_with_me_formset %}
-                        <div class="form-row work-with-me-row" data-row-id="{{ forloop.counter }}">
-                            <div class="form-group">
-                                <label>Platform</label>
-                                {{ form.platform }}
+                        <div class="service-card" data-row-id="{{ forloop.counter }}">
+                            {{ form.id }}
+                            <div class="service-card-header">
+                                <div class="service-card-grid">
+                                    <div class="form-group">
+                                        <label for="{{ form.platform.id_for_label }}">Platform</label>
+                                        {{ form.platform }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.offering.id_for_label }}">Offering</label>
+                                        {{ form.offering }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Offering</label>
-                                {{ form.offering }}
+                            <div class="service-card-content">
+                                <div class="form-group">
+                                    <label for="{{ form.service_description.id_for_label }}">Service Description</label>
+                                    {{ form.service_description }}
+                                </div>
+                                <div class="service-card-grid-three">
+                                    <div class="form-group">
+                                        <label for="{{ form.price.id_for_label }}">Price</label>
+                                        {{ form.price }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.number_of_deliverables.id_for_label }}">Number of Deliverables</label>
+                                        {{ form.number_of_deliverables }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.length_of_deliverables.id_for_label }}">Length (seconds)</label>
+                                        {{ form.length_of_deliverables }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Service Description</label>
-                                {{ form.service_description }}
+                            <div class="service-card-footer">
+                                <button type="button" class="delete-offering-button" data-row-id="{{ forloop.counter }}">
+                                    <svg viewBox="0 0 24 24" width="16" height="16">
+                                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
                             </div>
-                            <div class="form-group">
-                                <label>Price</label>
-                                {{ form.price }}
-                            </div>
-                            <div class="form-group">
-                                <label>CTA Button</label>
-                                {{ form.cta_button }}
-                            </div>
-                            <button type="button" class="delete-offering-button" data-row-id="{{ forloop.counter }}">Delete</button>
                         </div>
                     {% endfor %}
                 </div>
-                <button type="button" id="add-offering-button" class="add-button">Add New Offering</button>
+                <div class="form-actions">
+                    <button type="button" id="add-offering-button" class="add-button">
+                        <svg class="plus-icon" viewBox="0 0 24 24" width="16" height="16">
+                            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Add New Offering
+                    </button>
+                    <button type="submit" class="save-button">Save Work With Me</button>
+                </div>
             </section>
+        </form>
 
+        <!-- Gallery Section -->
+        <form method="post" enctype="multipart/form-data" class="section-form" id="gallery-form">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="gallery">
+            <section class="card gallery-section">
+                <div class="card-header" onclick="toggleSection(this)">
+                    <h2>Gallery</h2>
+                    <div class="arrow">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-content" id="gallery-container">
+                    {{ gallery_formset.management_form }}
+                    {% for form in gallery_formset %}
+                        <div class="gallery-card" data-row-id="{{ forloop.counter }}">
+                            {{ form.id }}
+                            <div class="gallery-grid">
+                                <!-- Platform -->
+                                <div class="form-group">
+                                    <label for="{{ form.platform.id_for_label }}">Platform</label>
+                                    <div class="platform-display">
+                                        <span class="platform-icon" data-platform="{{ form.platform.value|default:'' }}"></span>
+                                        {{ form.platform }}
+                                    </div>
+                                </div>
 
-               <section class="card">
-                   <div class="card-header">
-                       <h2>Gallery</h2>
-                   </div>
-                   <div class="card-content">
-                       {{ gallery_formset.management_form }}
-                       {% for form in gallery_formset %}
-                           <div class="form-row gallery-row">
-                               <div class="form-group">
-                                   <label>Platform</label>
-                                   {{ form.platform }}
-                               </div>
-                               <div class="form-group">
-                                   <label>Content URL</label>
-                                   {{ form.url }}
-                               </div>
-                           </div>
-                       {% endfor %}
-                   </div>
-               </section>
+                                <!-- Content URL -->
+                                <div class="form-group url-group">
+                                    <label for="{{ form.example_url.id_for_label }}">Content URL</label>
+                                    <div class="url-container">
+                                        {{ form.example_url }}
+                                        <button type="button" class="copy-button" title="Copy URL">
+                                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                                <path d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.083 2.57A2 2 0 0014.685 2H10a2 2 0 00-2 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
 
-               <div class="form-actions">
-                   <button type="submit" class="save-button">Save Media Kit</button>
-               </div>
-           </form>
+                                <!-- Priority -->
+                                <div class="form-group priority-group">
+                                    <label for="{{ form.video_priority.id_for_label }}">Priority</label>
+                                    <div class="priority-display">
+                                        <svg viewBox="0 0 24 24" width="16" height="16">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="2"/>
+                                            <path d="M12 6v6l4 2" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+                                        </svg>
+                                        {{ form.video_priority }}
+                                    </div>
+                                </div>
 
-           <footer>
-               © {% now "Y" %} Word on the Block. All rights reserved.
-           </footer>
-       </div>
+                                <!-- Delete Button -->
+                                <button type="button" class="delete-gallery-button" data-row-id="{{ forloop.counter }}">
+                                    <svg viewBox="0 0 24 24" width="16" height="16">
+                                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="gallery-actions">
+                        <button type="button" id="add-gallery-button" class="add-button">Add New Gallery Item</button>
+                        <button type="submit" class="save-button">Save Gallery</button>
+                    </div>
+                </div>
+            </section>
+        </form>
 
-       <script>
-       	document.getElementById('add-offering-button').addEventListener('click', function () {
-       	    const container = document.getElementById('work-with-me-container');
-       	    const newRow = document.createElement('div');
-       	    newRow.classList.add('form-row', 'work-with-me-row');
-       	    newRow.innerHTML = `
-       	        <div class="form-group">
-       	            <label>Platform</label>
-       	            <input type="text" name="new_platform" class="form-control">
-       	        </div>
-       	        <div class="form-group">
-       	            <label>Offering</label>
-       	            <input type="text" name="new_offering" class="form-control">
-       	        </div>
-       	        <div class="form-group">
-       	            <label>Service Description</label>
-       	            <textarea name="new_service_description" class="form-control"></textarea>
-       	        </div>
-       	        <div class="form-group">
-       	            <label>Price</label>
-       	            <input type="text" name="new_price" class="form-control">
-       	        </div>
-       	        <div class="form-group">
-       	            <label>CTA Button</label>
-       	            <input type="text" name="new_cta_button" class="form-control">
-       	        </div>
-       	    `;
-       	    container.appendChild(newRow);
-       	});
+        <footer>
+            © {% now "Y" %} Word on the Block. All rights reserved.
+        </footer>
+    </div>
 
-       </script>
-       <script type="text/javascript">
-       	document.addEventListener('DOMContentLoaded', function () {
-       	    const container = document.getElementById('work-with-me-container');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tagContainer = document.getElementById('tagContainer');
+            const hiddenTagInput = document.querySelector('[name="tags"]');
+            const tagInput = document.getElementById('tagInput');
 
-       	    // Event delegation for delete buttons
-       	    container.addEventListener('click', function (e) {
-       	        if (e.target.classList.contains('delete-offering-button')) {
-       	            const rowId = e.target.getAttribute('data-row-id');
-       	            const row = document.querySelector(`[data-row-id="${rowId}"]`);
+            // Initialize hidden input with current tag IDs
+            function updateHiddenInput() {
+                const currentTags = Array.from(tagContainer.querySelectorAll('.tag'))
+                    .map(tag => tag.querySelector('.tag-delete').dataset.tagId)
+                    .filter(id => id);
+                hiddenTagInput.value = currentTags.join(',');
+                console.log('Updated hidden input:', hiddenTagInput.value); // Debug log
+            }
 
-       	            if (row) {
-       	                // Add a hidden input to mark the item for deletion
-       	                const deleteInput = document.createElement('input');
-       	                deleteInput.type = 'hidden';
-       	                deleteInput.name = `work_with_me_formset-${rowId}-DELETE`;
-       	                deleteInput.value = 'on';
-       	                container.appendChild(deleteInput);
+            // Initialize on page load
+            updateHiddenInput();
 
-       	                // Remove the row from the DOM
-       	                row.remove();
-       	            }
-       	        }
-       	    });
-       	});
+            // Handle tag deletion
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('tag-delete')) {
+                    console.log('Delete button clicked'); // Debug log
+                    const tagElement = e.target.closest('.tag');
+                    if (tagElement) {
+                        tagElement.remove();
+                        updateHiddenInput();
+                        console.log('Tag removed'); // Debug log
+                    }
+                }
+            });
 
-       </script>
-</html>
+            // Handle new tag creation
+            tagInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const tagName = this.value.trim();
+                    if (tagName) {
+                        fetch('/create-tag/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            },
+                            body: JSON.stringify({ tag_name: tagName })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Create new tag element
+                                const tagElement = document.createElement('span');
+                                tagElement.className = 'tag';
+                                tagElement.innerHTML = `
+                                    ${data.tag_name}
+                                    <button type="button" class="tag-delete" data-tag-id="${data.tag_id}">×</button>
+                                `;
+                                
+                                // Add to container before the input
+                                tagContainer.insertBefore(tagElement, tagInput);
+                                
+                                // Update hidden input
+                                updateHiddenInput();
+                                
+                                // Clear input
+                                this.value = '';
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Add this function to show notifications
+            function showNotification(message, isSuccess = true) {
+                const notification = document.createElement('div');
+                notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+                notification.textContent = message;
+                
+                // Style the notification
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '5px';
+                notification.style.backgroundColor = isSuccess ? '#4CAF50' : '#f44336';
+                notification.style.color = 'white';
+                notification.style.zIndex = '1000';
+                notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                
+                document.body.appendChild(notification);
+                
+                // Remove the notification after 3 seconds
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => notification.remove(), 500);
+                }, 3000);
+            }
+
+            // Update the form submission handler
+            const forms = document.querySelectorAll('.section-form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification(data.message || 'Saved successfully!');
+                        } else {
+                            showNotification(data.error || 'Error saving section', false);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Error saving section', false);
+                    });
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.copy-button')) {
+                    const urlInput = e.target.closest('.url-container').querySelector('input');
+                    navigator.clipboard.writeText(urlInput.value);
+                    showNotification('URL copied to clipboard!');
+                }
+            });
+        });
+
+        // Add this to your existing DOMContentLoaded event listener
+        function toggleSection(header) {
+            const card = header.closest('.card');
+            card.classList.toggle('collapsed');
+            
+            // Save state to localStorage
+            const sectionId = card.querySelector('section')?.id || card.id;
+            if (sectionId) {
+                localStorage.setItem(
+                    `section_${sectionId}_collapsed`,
+                    card.classList.contains('collapsed')
+                );
+            }
+        }
+
+        // Initialize collapse state from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.card').forEach(card => {
+                const sectionId = card.querySelector('section')?.id || card.id;
+                if (sectionId) {
+                    const isCollapsed = localStorage.getItem(`section_${sectionId}_collapsed`) === 'true';
+                    if (isCollapsed) {
+                        card.classList.add('collapsed');
+                    }
+                }
+            });
+        });
+    </script>
+

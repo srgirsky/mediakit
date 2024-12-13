@@ -20,6 +20,11 @@ class MediaKit(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     
+    def save(self, *args, **kwargs):
+        # Capitalize first letter of each word
+        self.name = self.name.title()
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.name
 
@@ -197,6 +202,8 @@ class Gallery(models.Model):
     image = models.ImageField(upload_to='gallery/',blank=True, null=True)
     caption = models.CharField(max_length=200, blank=True, null=True)
     example_url = models.URLField(max_length=200, blank=True, null=True)
+    platform = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Instagram"
+    video_priority = models.IntegerField(default=1)
     
     def __str__(self):
         return f"{self.media_kit.name} Gallery Image"

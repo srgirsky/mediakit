@@ -47,6 +47,34 @@
                             {{ media_kit_form.bio }}
                         </div>
                         <div class="form-group">
+                            <label for="{{ media_kit_form.url_slug.id_for_label }}">Custom URL</label>
+                            <div class="url-slug-input">
+                                <span class="url-prefix">mediakit/</span>
+                                {{ media_kit_form.url_slug }}
+                            </div>
+                            {% if media_kit_form.url_slug.errors %}
+                                <div class="error">{{ media_kit_form.url_slug.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label for="{{ media_kit_form.show_offering_price.id_for_label }}" class="checkbox-label">
+                                {{ media_kit_form.show_offering_price }}
+                                <span>Show offering prices on media kit</span>
+                            </label>
+                            {% if media_kit_form.show_offering_price.errors %}
+                                <div class="error">{{ media_kit_form.show_offering_price.errors }}</div>
+                            {% endif %}
+                        </div>
+						<div class="form-group checkbox-group">
+                            <label for="{{ media_kit_form.show_public.id_for_label }}" class="checkbox-label">
+                                {{ media_kit_form.show_public }}
+                                <span>Show media kit in public database</span>
+                            </label>
+                            {% if media_kit_form.show_public.errors %}
+                                <div class="error">{{ media_kit_form.show_public.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
                             <label>Tags</label>
                             <div id="tagContainer" class="tag-container">
                                 {% for tag in media_kit.tags.all %}
@@ -93,6 +121,7 @@
         <form method="post" enctype="multipart/form-data" class="section-form" id="brand-partners-form">
             {% csrf_token %}
             <input type="hidden" name="section" value="brand_partners">
+            {{ brand_partner_formset.management_form }}
             <section class="card">
                 <div class="card-header" onclick="toggleSection(this)">
                     <h2>Brand Partners</h2>
@@ -103,7 +132,6 @@
                     </div>
                 </div>
                 <div class="card-content">
-                    {{ brand_partner_formset.management_form }}
                     <div class="partners-container">
                         {% for form in brand_partner_formset %}
                             <div class="partner-row" data-row-id="{{ forloop.counter }}">
@@ -158,6 +186,7 @@
         <form method="post" enctype="multipart/form-data" class="section-form" id="social-platforms-form">
             {% csrf_token %}
             <input type="hidden" name="section" value="social_platforms">
+            {{ social_platform_formset.management_form }}
             <section class="card">
                 <div class="card-header" onclick="toggleSection(this)">
                     <h2>Social Platforms</h2>
@@ -168,7 +197,6 @@
                     </div>
                 </div>
                 <div class="card-content" id="social-platforms-container">
-                    {{ social_platform_formset.management_form }}
                     {% for form in social_platform_formset %}
                         <div class="form-row social-platform-row" data-row-id="{{ forloop.counter }}">
                             {{ form.id }}
@@ -278,6 +306,7 @@
         <form method="post" enctype="multipart/form-data" class="section-form" id="work-with-me-form">
             {% csrf_token %}
             <input type="hidden" name="section" value="work_with_me">
+            {{ work_with_me_formset.management_form }}
             <section class="card">
                 <div class="card-header" onclick="toggleSection(this)">
                     <h2>Work With Me</h2>
@@ -288,7 +317,6 @@
                     </div>
                 </div>
                 <div class="card-content" id="work-with-me-container">
-                    {{ work_with_me_formset.management_form }}
                     {% for form in work_with_me_formset %}
                         <div class="service-card" data-row-id="{{ forloop.counter }}">
                             {{ form.id }}
@@ -350,6 +378,7 @@
         <form method="post" enctype="multipart/form-data" class="section-form" id="gallery-form">
             {% csrf_token %}
             <input type="hidden" name="section" value="gallery">
+            {{ gallery_formset.management_form }}
             <section class="card gallery-section">
                 <div class="card-header" onclick="toggleSection(this)">
                     <h2>Gallery</h2>
@@ -360,7 +389,6 @@
                     </div>
                 </div>
                 <div class="card-content" id="gallery-container">
-                    {{ gallery_formset.management_form }}
                     {% for form in gallery_formset %}
                         <div class="gallery-card" data-row-id="{{ forloop.counter }}">
                             {{ form.id }}
@@ -523,8 +551,65 @@
             forms.forEach(form => {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
+                    
+                    // Create FormData object
                     const formData = new FormData(this);
                     
+                    // Log the form data being submitted
+                    console.log('Submitting form data:', {
+                        section: formData.get('section'),
+                        totalForms: formData.get('form-TOTAL_FORMS'),
+                        formEntries: Array.from(formData.entries())
+                    });
+                    
+                    // Get the section name
+                    const section = formData.get('section');
+                    
+                    // Make sure management form data is included for formsets
+                    if (section !== 'profile') {
+                        // Get the management form prefix based on section
+                        let prefix = '';
+                        switch(section) {
+                            case 'brand_partners':
+                                prefix = 'brand_partners';
+                                break;
+                            case 'social_platforms':
+                                prefix = 'social_platform';
+                                break;
+                            case 'work_with_me':
+                                prefix = 'form';
+                                break;
+                            case 'gallery':
+                                prefix = 'gallery';
+                                break;
+                        }
+                        
+                        // Make sure TOTAL_FORMS is included and correct
+                        const totalForms = this.querySelectorAll(`[data-row-id]`).length;
+                        if (!formData.has(`${prefix}-TOTAL_FORMS`)) {
+                            formData.set(`${prefix}-TOTAL_FORMS`, totalForms);
+                        }
+                        
+                        // Add other required management form fields if not present
+                        if (!formData.has(`${prefix}-INITIAL_FORMS`)) {
+                            const initialForms = this.querySelector(`[name="${prefix}-INITIAL_FORMS"]`)?.value || '0';
+                            formData.set(`${prefix}-INITIAL_FORMS`, initialForms);
+                        }
+                        if (!formData.has(`${prefix}-MIN_NUM_FORMS`)) {
+                            formData.set(`${prefix}-MIN_NUM_FORMS`, '0');
+                        }
+                        if (!formData.has(`${prefix}-MAX_NUM_FORMS`)) {
+                            formData.set(`${prefix}-MAX_NUM_FORMS`, '1000');
+                        }
+                    }
+
+                    // Debug log
+                    console.log('Submitting form data:', {
+                        section: section,
+                        formData: Object.fromEntries(formData.entries())
+                    });
+                    
+                    // Submit the form
                     fetch(window.location.href, {
                         method: 'POST',
                         body: formData,
@@ -537,6 +622,7 @@
                         if (data.success) {
                             showNotification(data.message || 'Saved successfully!');
                         } else {
+                            console.error('Form errors:', data.error, data.form_errors, data.non_form_errors);
                             showNotification(data.error || 'Error saving section', false);
                         }
                     })
@@ -554,6 +640,695 @@
                     showNotification('URL copied to clipboard!');
                 }
             });
+
+            // Handle Brand Partner deletion
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-brand-partner-button')) {
+                    const row = e.target.closest('.partner-row');
+                    if (row) {
+                        if (confirm('Are you sure you want to delete this brand partner?')) {
+                            // Get the form
+                            const form = document.getElementById('brand-partners-form');
+                            
+                            // Get the ID field before removing the row
+                            const idField = row.querySelector('input[name$="-id"]');
+                            const idValue = idField ? idField.value : null;
+                            
+                            console.log('Attempting to delete brand partner:', {
+                                rowId: row.getAttribute('data-row-id'),
+                                idValue: idValue,
+                                formData: new FormData(form)
+                            });
+
+                            if (idValue) {
+                                // Handle existing record deletion
+                                const deleteField = document.createElement('input');
+                                deleteField.type = 'hidden';
+                                deleteField.name = `brand_partners-${row.getAttribute('data-row-id')-1}-DELETE`;
+                                deleteField.value = 'on';
+                                
+                                const preservedIdField = document.createElement('input');
+                                preservedIdField.type = 'hidden';
+                                preservedIdField.name = `brand_partners-${row.getAttribute('data-row-id')-1}-id`;
+                                preservedIdField.value = idValue;
+                                
+                                form.appendChild(preservedIdField);
+                                form.appendChild(deleteField);
+                                
+                                // Submit form to delete existing record
+                                submitFormAfterDeletion(form, row);
+                            } else {
+                                // For new/empty rows, just remove from DOM and update indexes
+                                row.remove();
+                                
+                                // Update the TOTAL_FORMS count
+                                const totalFormsInput = form.querySelector('[name="brand_partners-TOTAL_FORMS"]');
+                                const remainingRows = form.querySelectorAll('.partner-row').length;
+                                if (totalFormsInput) {
+                                    totalFormsInput.value = remainingRows;
+                                    console.log('Updated TOTAL_FORMS to:', remainingRows);
+                                }
+                                
+                                // Update indexes for remaining rows
+                                updateRowIndexes(form);
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Helper function to update row indexes
+            function updateRowIndexes(form) {
+                const rows = form.querySelectorAll('.partner-row');
+                rows.forEach((row, index) => {
+                    row.setAttribute('data-row-id', index + 1);
+                    row.querySelectorAll('[name*="brand_partners-"]').forEach(input => {
+                        const oldIndex = input.name.match(/brand_partners-(\d+)-/)[1];
+                        input.name = input.name.replace(
+                            `brand_partners-${oldIndex}-`,
+                            `brand_partners-${index}-`
+                        );
+                        if (input.id) {
+                            input.id = input.id.replace(
+                                `brand_partners-${oldIndex}-`,
+                                `brand_partners-${index}-`
+                            );
+                        }
+                    });
+                });
+            }
+
+            // Helper function to submit form after deletion
+            function submitFormAfterDeletion(form, row) {
+                const formData = new FormData(form);
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the DOM only after successful save
+                        row.remove();
+                        
+                        // Update the TOTAL_FORMS count
+                        const totalFormsInput = form.querySelector('[name="brand_partners-TOTAL_FORMS"]');
+                        const remainingRows = form.querySelectorAll('.partner-row').length;
+                        if (totalFormsInput) {
+                            totalFormsInput.value = remainingRows;
+                            console.log('Updated TOTAL_FORMS to:', remainingRows);
+                        }
+                        
+                        // Update form indexes for remaining rows
+                        updateRowIndexes(form);
+
+                        showNotification('Brand partner deleted successfully!');
+                        
+                        // Optionally reload the page to ensure everything is in sync
+                        window.location.reload();
+                    } else {
+                        console.error('Error saving deletion:', data);
+                        showNotification('Error deleting brand partner', false);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error deleting brand partner', false);
+                });
+            }
+
+            // Handle Social Platform deletion
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-platform-button')) {
+                    const row = e.target.closest('.social-platform-row');
+                    if (row) {
+                        if (confirm('Are you sure you want to delete this platform?')) {
+                            row.remove();
+                            updateFormsetIndexes('social-platforms-form');
+                        }
+                    }
+                }
+            });
+
+            // Helper function to submit Work With Me form after deletion
+            function submitWorkWithMeFormAfterDeletion(form, cardToDelete) {
+                const formData = new FormData(form);
+                formData.set('section', 'work_with_me');
+
+                // Add a flag to indicate this is a deletion operation
+                formData.append('is_deletion', 'true');
+
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        cardToDelete.remove();
+                        showNotification('Offering deleted successfully');
+                        updateWorkWithMeIndexes(form);
+                    } else {
+                        console.error('Server returned error:', data);
+                        showNotification(data.error || 'Error deleting offering', false);
+                    }
+                })
+                .catch(error => {
+                    console.error('Network or parsing error:', error);
+                    showNotification('Error deleting offering: ' + error.message, false);
+                });
+            }
+
+            // Update the deletion handler
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-offering-button')) {
+                    const card = e.target.closest('.service-card');
+                    if (card) {
+                        if (confirm('Are you sure you want to delete this offering?')) {
+                            // Get the form
+                            const form = document.getElementById('work-with-me-form');
+                            
+                            // Get the ID field before removing the card
+                            const idField = card.querySelector('input[name$="-id"]');
+                            const idValue = idField ? idField.value : null;
+                            
+                            // Ensure management form fields exist
+                            if (!form.querySelector('[name="work_with_me-TOTAL_FORMS"]')) {
+                                const managementFields = `
+                                    <input type="hidden" name="work_with_me-TOTAL_FORMS" value="${form.querySelectorAll('.service-card').length}">
+                                    <input type="hidden" name="work_with_me-INITIAL_FORMS" value="${form.querySelectorAll('.service-card input[name$="-id"][value]').length}">
+                                    <input type="hidden" name="work_with_me-MIN_NUM_FORMS" value="0">
+                                    <input type="hidden" name="work_with_me-MAX_NUM_FORMS" value="1000">
+                                `;
+                                form.insertAdjacentHTML('afterbegin', managementFields);
+                            }
+
+                            if (idValue) {
+                                // Handle existing record deletion
+                                const deleteField = document.createElement('input');
+                                deleteField.type = 'hidden';
+                                deleteField.name = `work_with_me-${card.getAttribute('data-row-id')-1}-DELETE`;
+                                deleteField.value = 'on';
+                                
+                                const preservedIdField = document.createElement('input');
+                                preservedIdField.type = 'hidden';
+                                preservedIdField.name = `work_with_me-${card.getAttribute('data-row-id')-1}-id`;
+                                preservedIdField.value = idValue;
+                                
+                                form.appendChild(preservedIdField);
+                                form.appendChild(deleteField);
+                                
+                                // Submit form to delete existing record
+                                submitWorkWithMeFormAfterDeletion(form, card);
+                            } else {
+                                // For new/empty cards, just remove from DOM and update indexes
+                                card.remove();
+                                
+                                // Update the TOTAL_FORMS count
+                                const totalFormsInput = form.querySelector('[name="work_with_me-TOTAL_FORMS"]');
+                                const remainingCards = form.querySelectorAll('.service-card').length;
+                                if (totalFormsInput) {
+                                    totalFormsInput.value = remainingCards;
+                                }
+                                
+                                // Update indexes for remaining cards
+                                updateWorkWithMeIndexes(form);
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Helper function to update Work With Me indexes
+            function updateWorkWithMeIndexes(form) {
+                const cards = form.querySelectorAll('.service-card');
+                cards.forEach((card, index) => {
+                    card.setAttribute('data-row-id', index + 1);
+                    card.querySelectorAll('[name*="work_with_me-"]').forEach(input => {
+                        const oldIndex = input.name.match(/work_with_me-(\d+)-/)[1];
+                        input.name = input.name.replace(
+                            `work_with_me-${oldIndex}-`,
+                            `work_with_me-${index}-`
+                        );
+                        if (input.id) {
+                            input.id = input.id.replace(
+                                `work_with_me-${oldIndex}-`,
+                                `work_with_me-${index}-`
+                            );
+                        }
+                    });
+                });
+            }
+
+            // Update form submission handler
+            document.getElementById('work-with-me-form')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Create FormData object
+                const formData = new FormData(this);
+                
+                // Debug log to check form data
+                console.log('Form Data:');
+                for (let pair of formData.entries()) {
+                    console.log(pair[0] + ': ' + pair[1]);
+                }
+                
+                // Ensure we have the correct section identifier
+                formData.set('section', 'work_with_me');
+                
+                // Get current counts
+                const totalCards = this.querySelectorAll('.service-card').length;
+                const initialCards = this.querySelectorAll('.service-card input[name$="-id"][value]').length;
+                
+                // Set management form data
+                formData.set('work_with_me-TOTAL_FORMS', totalCards.toString());
+                formData.set('work_with_me-INITIAL_FORMS', initialCards.toString());
+                formData.set('work_with_me-MIN_NUM_FORMS', '0');
+                formData.set('work_with_me-MAX_NUM_FORMS', '1000');
+                
+                console.log('Submitting Work With Me form:', {
+                    totalForms: formData.get('work_with_me-TOTAL_FORMS'),
+                    initialForms: formData.get('work_with_me-INITIAL_FORMS'),
+                    section: formData.get('section'),
+                    allData: Object.fromEntries(formData.entries())
+                });
+
+                // Submit the form
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': this.querySelector('[name="csrfmiddlewaretoken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Work With Me section saved successfully!');
+                    } else {
+                        console.error('Server returned error:', data);
+                        showNotification(data.error || 'Error saving Work With Me section', false);
+                    }
+                })
+                .catch(error => {
+                    console.error('Network or parsing error:', error);
+                    showNotification('Error saving Work With Me section: ' + error.message, false);
+                });
+            });
+
+            // Make sure management form fields are initialized on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                const workWithMeForm = document.getElementById('work-with-me-form');
+                if (workWithMeForm) {
+                    // Initialize or update management form fields
+                    const totalCards = workWithMeForm.querySelectorAll('.service-card').length;
+                    const initialCards = workWithMeForm.querySelectorAll('.service-card input[name$="-id"][value]').length;
+                    
+                    // Update or create management form fields
+                    const managementFields = {
+                        'work_with_me-TOTAL_FORMS': totalCards,
+                        'work_with_me-INITIAL_FORMS': initialCards,
+                        'work_with_me-MIN_NUM_FORMS': 0,
+                        'work_with_me-MAX_NUM_FORMS': 1000
+                    };
+                    
+                    Object.entries(managementFields).forEach(([name, value]) => {
+                        let input = workWithMeForm.querySelector(`[name="${name}"]`);
+                        if (!input) {
+                            input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = name;
+                            workWithMeForm.insertBefore(input, workWithMeForm.firstChild);
+                        }
+                        input.value = value;
+                    });
+                    
+                    console.log('Initialized Work With Me form management fields:', managementFields);
+                }
+            });
+
+            // Handle Gallery item deletion
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-gallery-button')) {
+                    e.stopPropagation();
+                    const card = e.target.closest('.gallery-card');
+                    if (card && confirm('Are you sure you want to delete this gallery item?')) {
+                        const form = document.getElementById('gallery-form');
+                        const idInput = card.querySelector('input[name$="-id"]');
+                        const index = parseInt(card.getAttribute('data-row-id')) - 1;
+                        
+                        // For existing items with an ID
+                        if (idInput && idInput.value) {
+                            // Create a minimal form with just the necessary fields for deletion
+                            const formData = new FormData();
+                            formData.append('csrfmiddlewaretoken', form.querySelector('[name="csrfmiddlewaretoken"]').value);
+                            formData.append('section', 'gallery');
+                            formData.append(`gallery-${index}-id`, idInput.value);
+                            formData.append(`gallery-${index}-DELETE`, 'on');
+                            formData.append('gallery-TOTAL_FORMS', '1');
+                            formData.append('gallery-INITIAL_FORMS', '1');
+                            formData.append('gallery-MIN_NUM_FORMS', '0');
+                            formData.append('gallery-MAX_NUM_FORMS', '1000');
+                            
+                            fetch(window.location.href, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    card.remove();
+                                    updateGalleryIndexes();
+                                    showNotification('Gallery item deleted successfully');
+                                } else {
+                                    showNotification(data.error || 'Error deleting gallery item', false);
+                                    console.error('Form errors:', data.form_errors);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showNotification('Error deleting gallery item', false);
+                            });
+                        } else {
+                            // For new items without an ID, just remove from DOM
+                            card.remove();
+                            updateGalleryIndexes();
+                        }
+                    }
+                }
+            });
+
+            // Update the gallery form submission handler
+            document.getElementById('gallery-form')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Remove empty forms before submission
+                const cards = this.querySelectorAll('.gallery-card');
+                cards.forEach(card => {
+                    const platformInput = card.querySelector('select[name$="-platform"]');
+                    const urlInput = card.querySelector('input[name$="-example_url"]');
+                    
+                    if ((!platformInput?.value || !urlInput?.value) && 
+                        !card.querySelector('input[name$="-DELETE"]')) {
+                        card.remove();
+                    }
+                });
+                
+                // Update indexes after removing empty forms
+                updateGalleryIndexes();
+                
+                const formData = new FormData(this);
+                
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': this.querySelector('[name="csrfmiddlewaretoken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Gallery updated successfully');
+                    } else {
+                        showNotification(data.error || 'Error updating gallery', false);
+                        console.error('Form errors:', data.form_errors);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error updating gallery', false);
+                });
+            });
+
+            // Add Brand Partner
+            document.getElementById('add-brand-partner-button')?.addEventListener('click', function() {
+                const container = document.querySelector('.partners-container');
+                const totalForms = document.querySelector('#brand-partners-form [name$="-TOTAL_FORMS"]');
+                const newIndex = parseInt(totalForms.value);
+                
+                const template = `
+                    <div class="partner-row" data-row-id="${newIndex + 1}">
+                        <input type="hidden" name="form-${newIndex}-id" id="id_form-${newIndex}-id" value="">
+                        <div class="separator"></div>
+                        <div class="partner-content">
+                            <div class="partner-fields">
+                                <div class="form-group">
+                                    <label for="id_form-${newIndex}-name">Brand Name</label>
+                                    <input type="text" name="form-${newIndex}-name" id="id_form-${newIndex}-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_form-${newIndex}-logo">Brand Logo</label>
+                                    <input type="file" name="form-${newIndex}-logo" id="id_form-${newIndex}-logo">
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_form-${newIndex}-integration_url">Integration URL</label>
+                                    <input type="url" name="form-${newIndex}-integration_url" id="id_form-${newIndex}-integration_url">
+                                </div>
+                            </div>
+                            <button type="button" class="delete-brand-partner-button" data-row-id="${newIndex + 1}">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 6H5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', template);
+                totalForms.value = newIndex + 1;
+            });
+
+            // Add Social Platform
+            document.getElementById('add-platform-button')?.addEventListener('click', function() {
+                const container = document.getElementById('social-platforms-container');
+                const totalForms = document.querySelector('#social-platforms-form [name$="-TOTAL_FORMS"]');
+                const newIndex = parseInt(totalForms.value);
+                
+                const template = `
+                    <div class="form-row social-platform-row" data-row-id="${newIndex + 1}">
+                        <div class="form-group">
+                            <label for="id_form-${newIndex}-platform">Platform</label>
+                            <select name="form-${newIndex}-platform" id="id_form-${newIndex}-platform">
+                                <option value="">---------</option>
+                                <option value="YOUTUBE">YouTube</option>
+                                <option value="INSTAGRAM">Instagram</option>
+                                <option value="TIKTOK">TikTok</option>
+                                <option value="TWITTER">Twitter</option>
+                                <option value="FACEBOOK">Facebook</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_form-${newIndex}-followers">Followers</label>
+                            <input type="number" name="form-${newIndex}-followers" id="id_form-${newIndex}-followers">
+                        </div>
+                        <div class="form-group">
+                            <label for="id_form-${newIndex}-engagement_rate">Engagement Rate (%)</label>
+                            <input type="number" step="0.01" name="form-${newIndex}-engagement_rate" id="id_form-${newIndex}-engagement_rate">
+                        </div>
+                        <button type="button" class="delete-platform-button" data-row-id="${newIndex + 1}">Delete</button>
+                    </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', template);
+                totalForms.value = newIndex + 1;
+            });
+
+            // Update the Add Work With Me Offering button handler
+            document.getElementById('add-offering-button')?.addEventListener('click', function() {
+                const container = document.getElementById('work-with-me-container');
+                const totalForms = document.querySelector('#work-with-me-form [name="work_with_me-TOTAL_FORMS"]');
+                const newIndex = parseInt(totalForms.value);
+                
+                const template = `
+                    <div class="service-card" data-row-id="${newIndex + 1}">
+                        <div class="service-card-header">
+                            <div class="service-card-grid">
+                                <div class="form-group">
+                                    <label for="id_work_with_me-${newIndex}-platform">Platform</label>
+                                    <select name="work_with_me-${newIndex}-platform" id="id_work_with_me-${newIndex}-platform">
+                                        <option value="">---------</option>
+                                        <option value="YOUTUBE">YouTube</option>
+                                        <option value="INSTAGRAM">Instagram</option>
+                                        <option value="TIKTOK">TikTok</option>
+                                        <option value="TWITTER">Twitter</option>
+                                        <option value="FACEBOOK">Facebook</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_work_with_me-${newIndex}-offering">Offering</label>
+                                    <input type="text" name="work_with_me-${newIndex}-offering" id="id_work_with_me-${newIndex}-offering">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-card-content">
+                            <div class="form-group">
+                                <label for="id_work_with_me-${newIndex}-service_description">Service Description</label>
+                                <textarea name="work_with_me-${newIndex}-service_description" id="id_work_with_me-${newIndex}-service_description"></textarea>
+                            </div>
+                            <div class="service-card-grid-three">
+                                <div class="form-group">
+                                    <label for="id_work_with_me-${newIndex}-price">Price</label>
+                                    <input type="number" name="work_with_me-${newIndex}-price" id="id_work_with_me-${newIndex}-price">
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_work_with_me-${newIndex}-number_of_deliverables">Number of Deliverables</label>
+                                    <input type="number" name="work_with_me-${newIndex}-number_of_deliverables" id="id_work_with_me-${newIndex}-number_of_deliverables">
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_work_with_me-${newIndex}-length_of_deliverables">Length (seconds)</label>
+                                    <input type="number" name="work_with_me-${newIndex}-length_of_deliverables" id="id_work_with_me-${newIndex}-length_of_deliverables">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-card-footer">
+                            <button type="button" class="delete-offering-button" data-row-id="${newIndex + 1}">
+                                <svg viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', template);
+                totalForms.value = newIndex + 1;
+            });
+
+            // Add Gallery Item
+            document.getElementById('add-gallery-button')?.addEventListener('click', function() {
+                const container = document.getElementById('gallery-container');
+                const totalForms = document.querySelector('#gallery-form [name$="-TOTAL_FORMS"]');
+                const newIndex = parseInt(totalForms.value);
+                
+                const template = `
+                    <div class="gallery-card" data-row-id="${newIndex + 1}">
+                        <div class="gallery-grid">
+                            <div class="form-group">
+                                <label for="id_form-${newIndex}-platform">Platform</label>
+                                <div class="platform-display">
+                                    <span class="platform-icon"></span>
+                                    <select name="form-${newIndex}-platform" id="id_form-${newIndex}-platform">
+                                        <option value="">---------</option>
+                                        <option value="YOUTUBE">YouTube</option>
+                                        <option value="INSTAGRAM">Instagram</option>
+                                        <option value="TIKTOK">TikTok</option>
+                                        <option value="TWITTER">Twitter</option>
+                                        <option value="FACEBOOK">Facebook</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group url-group">
+                                <label for="id_form-${newIndex}-example_url">Content URL</label>
+                                <div class="url-container">
+                                    <input type="url" name="form-${newIndex}-example_url" id="id_form-${newIndex}-example_url">
+                                    <button type="button" class="copy-button" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="16" height="16">
+                                            <path d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.083 2.57A2 2 0 0014.685 2H10a2 2 0 00-2 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group priority-group">
+                                <label for="id_form-${newIndex}-video_priority">Priority</label>
+                                <div class="priority-display">
+                                    <svg viewBox="0 0 24 24" width="16" height="16">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="2"/>
+                                        <path d="M12 6v6l4 2" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                    <input type="number" name="form-${newIndex}-video_priority" id="id_form-${newIndex}-video_priority">
+                                </div>
+                            </div>
+                            <button type="button" class="delete-gallery-button" data-row-id="${newIndex + 1}">
+                                <svg viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', template);
+                totalForms.value = newIndex + 1;
+            });
+
+            // Update the gallery form submission handler
+            document.getElementById('gallery-form')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get all gallery cards
+                const cards = this.querySelectorAll('.gallery-card');
+                const totalFormsInput = this.querySelector('[name="gallery-TOTAL_FORMS"]');
+                const initialFormsInput = this.querySelector('[name="gallery-INITIAL_FORMS"]');
+                
+                // Update form counts
+                totalFormsInput.value = cards.length;
+                
+                // Create FormData object
+                const formData = new FormData(this);
+                
+                // Debug log
+                console.log('Submitting form data:');
+                for (let pair of formData.entries()) {
+                    console.log(pair[0], pair[1]);
+                }
+                
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': this.querySelector('[name="csrfmiddlewaretoken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Gallery updated successfully');
+                        // Optionally reload to show updated state
+                        window.location.reload();
+                    } else {
+                        showNotification(data.error || 'Error updating gallery', false);
+                        console.error('Form errors:', data.form_errors);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error updating gallery', false);
+                });
+            });
+
+            // Update the updateGalleryIndexes function
+            function updateGalleryIndexes() {
+                const form = document.getElementById('gallery-form');
+                const cards = form.querySelectorAll('.gallery-card');
+                const totalFormsInput = form.querySelector('[name="gallery-TOTAL_FORMS"]');
+                
+                // Update total forms count
+                totalFormsInput.value = cards.length;
+                
+                // Update indexes for all cards
+                cards.forEach((card, index) => {
+                    card.setAttribute('data-row-id', index + 1);
+                    card.querySelectorAll('[name*="gallery-"]').forEach(input => {
+                        const oldName = input.name;
+                        const newName = oldName.replace(/gallery-\d+/, `gallery-${index}`);
+                        input.name = newName;
+                        if (input.id) {
+                            input.id = input.id.replace(/gallery-\d+/, `gallery-${index}`);
+                        }
+                    });
+                });
+            }
         });
 
         // Add this to your existing DOMContentLoaded event listener

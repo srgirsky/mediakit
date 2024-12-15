@@ -5,10 +5,13 @@ from .models import MediaKit, SocialPlatform, WorkWithMe, BrandPartner, Gallery
 class MediaKitForm(forms.ModelForm):
     class Meta:
         model = MediaKit
-        fields = ['name', 'username', 'location', 'bio', 'profile_photo', 'banner_image']
+        fields = ['name', 'username', 'location', 'bio', 'profile_photo', 'banner_image', 'url_slug', 'show_offering_price','show_public']
         widgets = {
             'profile_photo': forms.FileInput(attrs={'show_clear_checkbox': False}),
-            'banner_image': forms.FileInput(attrs={'show_clear_checkbox': False})
+            'banner_image': forms.FileInput(attrs={'show_clear_checkbox': False}),
+            'url_slug': forms.TextInput(attrs={'placeholder': 'your-custom-url'}),
+            'show_offering_price': forms.CheckboxInput(),
+            'show_public': forms.CheckboxInput(),
         }
 
     def __init__(self, *args, **kwargs):

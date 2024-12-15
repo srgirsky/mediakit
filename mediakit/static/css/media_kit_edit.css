@@ -753,3 +753,60 @@ label[for*="-logo-clear"],
     stroke: currentColor;
     fill: none;
 }
+
+/* URL Slug Input Styling */
+.url-slug-input {
+    display: flex;
+    align-items: center;
+    background-color: #f9fafb;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0 10px;
+}
+
+.url-slug-input .url-prefix {
+    color: #6b7280;
+    font-size: 0.9em;
+    padding-right: 5px;
+    border-right: 1px solid #ddd;
+    margin-right: 5px;
+}
+
+.url-slug-input input {
+    border: none;
+    background: transparent;
+    padding: 10px 5px;
+    flex: 1;
+}
+
+.url-slug-input input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Checkbox Styling */
+.checkbox-group {
+    margin: 15px 0;
+}
+
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto !important;
+    margin: 0;
+    cursor: pointer;
+}
+
+.checkbox-label span {
+    color: #374151;
+    font-weight: normal;
+}
+
+.error {
+    border-color: #f44336 !important;
+}

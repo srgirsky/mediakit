@@ -189,7 +189,11 @@
                                        <h3>{{ option.offering }}</h3>
                                        <p>{{ option.service_description }}</p>
                                        <div class="price-button">
-                                           <p class="price">${{ option.price|intcomma }}</p>
+                                           {% if media_kit.show_offering_price %}
+                                               <p class="price">${{ option.price|intcomma }}</p>
+                                           {% else %}
+                                               <p class="price">Contact for pricing</p>
+                                           {% endif %}
                                            <button class="book-button">{{ option.cta_button }}</button>
                                        </div>
                                    </article>

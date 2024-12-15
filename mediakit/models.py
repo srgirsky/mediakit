@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.urls import reverse
+from django.utils.text import slugify
 
 # Create your models here.
 
@@ -13,10 +15,37 @@ class MediaKit(models.Model):
     profile_photo = models.ImageField(upload_to='profiles/', blank=True, null=True)
     banner_image = models.ImageField(upload_to='backgrounds/', blank=True, null=True)
     tags = models.ManyToManyField('Tag', blank=True)
-    url_slug = models.CharField(max_length=100, blank=True, null=True)
+    url_slug = models.CharField(
+        max_length=100, 
+        blank=True, 
+        null=True, 
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex='^[a-z0-9-]+$',
+                message='URL slug must contain only lowercase letters, numbers, and hyphens',
+                code='invalid_url_slug'
+            )
+        ]
+    )
+    show_offering_price = models.BooleanField(default=True)
+    show_public = models.BooleanField(default=True)
     
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        if self.url_slug:
+            return reverse('media_kit_detail_by_slug', kwargs={'url_slug': self.url_slug})
+        return reverse('media_kit_detail', kwargs={'media_kit_id': self.id})
+
+    def save(self, *args, **kwargs):
+        # Auto-generate slug if not provided
+        if not self.url_slug:
+            self.url_slug = slugify(self.name)
+        # Ensure slug is properly formatted
+        self.url_slug = slugify(self.url_slug)
+        super().save(*args, **kwargs)
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)

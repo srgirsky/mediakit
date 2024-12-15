@@ -886,18 +886,12 @@
                 });
             }
 
-            // Update form submission handler
+            // Update the Work With Me form submission handler
             document.getElementById('work-with-me-form')?.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 // Create FormData object
                 const formData = new FormData(this);
-                
-                // Debug log to check form data
-                console.log('Form Data:');
-                for (let pair of formData.entries()) {
-                    console.log(pair[0] + ': ' + pair[1]);
-                }
                 
                 // Ensure we have the correct section identifier
                 formData.set('section', 'work_with_me');
@@ -906,17 +900,23 @@
                 const totalCards = this.querySelectorAll('.service-card').length;
                 const initialCards = this.querySelectorAll('.service-card input[name$="-id"][value]').length;
                 
-                // Set management form data
-                formData.set('work_with_me-TOTAL_FORMS', totalCards.toString());
-                formData.set('work_with_me-INITIAL_FORMS', initialCards.toString());
-                formData.set('work_with_me-MIN_NUM_FORMS', '0');
-                formData.set('work_with_me-MAX_NUM_FORMS', '1000');
+                // Clear any existing management form data
+                formData.delete('work_with_me-TOTAL_FORMS');
+                formData.delete('work_with_me-INITIAL_FORMS');
+                formData.delete('work_with_me-MIN_NUM_FORMS');
+                formData.delete('work_with_me-MAX_NUM_FORMS');
                 
+                // Set fresh management form data
+                formData.append('work_with_me-TOTAL_FORMS', totalCards.toString());
+                formData.append('work_with_me-INITIAL_FORMS', initialCards.toString());
+                formData.append('work_with_me-MIN_NUM_FORMS', '0');
+                formData.append('work_with_me-MAX_NUM_FORMS', '1000');
+                
+                // Debug log
                 console.log('Submitting Work With Me form:', {
                     totalForms: formData.get('work_with_me-TOTAL_FORMS'),
                     initialForms: formData.get('work_with_me-INITIAL_FORMS'),
-                    section: formData.get('section'),
-                    allData: Object.fromEntries(formData.entries())
+                    section: formData.get('section')
                 });
 
                 // Submit the form
@@ -931,6 +931,8 @@
                 .then(data => {
                     if (data.success) {
                         showNotification('Work With Me section saved successfully!');
+                        // Reload the page to show the updated state
+                        window.location.reload();
                     } else {
                         console.error('Server returned error:', data);
                         showNotification(data.error || 'Error saving Work With Me section', false);
@@ -1073,26 +1075,26 @@
             // Add Brand Partner
             document.getElementById('add-brand-partner-button')?.addEventListener('click', function() {
                 const container = document.querySelector('.partners-container');
-                const totalForms = document.querySelector('#brand-partners-form [name$="-TOTAL_FORMS"]');
+                const totalForms = document.querySelector('#brand-partners-form [name="brand_partners-TOTAL_FORMS"]');
                 const newIndex = parseInt(totalForms.value);
                 
                 const template = `
                     <div class="partner-row" data-row-id="${newIndex + 1}">
-                        <input type="hidden" name="form-${newIndex}-id" id="id_form-${newIndex}-id" value="">
+                        <input type="hidden" name="brand_partners-${newIndex}-id" id="id_brand_partners-${newIndex}-id" value="">
                         <div class="separator"></div>
                         <div class="partner-content">
                             <div class="partner-fields">
                                 <div class="form-group">
-                                    <label for="id_form-${newIndex}-name">Brand Name</label>
-                                    <input type="text" name="form-${newIndex}-name" id="id_form-${newIndex}-name">
+                                    <label for="id_brand_partners-${newIndex}-name">Brand Name</label>
+                                    <input type="text" name="brand_partners-${newIndex}-name" id="id_brand_partners-${newIndex}-name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="id_form-${newIndex}-logo">Brand Logo</label>
-                                    <input type="file" name="form-${newIndex}-logo" id="id_form-${newIndex}-logo">
+                                    <label for="id_brand_partners-${newIndex}-logo">Brand Logo</label>
+                                    <input type="file" name="brand_partners-${newIndex}-logo" id="id_brand_partners-${newIndex}-logo">
                                 </div>
                                 <div class="form-group">
-                                    <label for="id_form-${newIndex}-integration_url">Integration URL</label>
-                                    <input type="url" name="form-${newIndex}-integration_url" id="id_form-${newIndex}-integration_url">
+                                    <label for="id_brand_partners-${newIndex}-integration_url">Integration URL</label>
+                                    <input type="url" name="brand_partners-${newIndex}-integration_url" id="id_brand_partners-${newIndex}-integration_url">
                                 </div>
                             </div>
                             <button type="button" class="delete-brand-partner-button" data-row-id="${newIndex + 1}">
@@ -1156,14 +1158,7 @@
                             <div class="service-card-grid">
                                 <div class="form-group">
                                     <label for="id_work_with_me-${newIndex}-platform">Platform</label>
-                                    <select name="work_with_me-${newIndex}-platform" id="id_work_with_me-${newIndex}-platform">
-                                        <option value="">---------</option>
-                                        <option value="YOUTUBE">YouTube</option>
-                                        <option value="INSTAGRAM">Instagram</option>
-                                        <option value="TIKTOK">TikTok</option>
-                                        <option value="TWITTER">Twitter</option>
-                                        <option value="FACEBOOK">Facebook</option>
-                                    </select>
+                                    <input type="text" name="work_with_me-${newIndex}-platform" id="id_work_with_me-${newIndex}-platform">
                                 </div>
                                 <div class="form-group">
                                     <label for="id_work_with_me-${newIndex}-offering">Offering</label>
